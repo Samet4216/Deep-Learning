@@ -23,30 +23,30 @@ class neuron():
 
     def __init__(self, input_size, activation, derivative):
         self.weights = np.random.randn(input_size) * 0.01
-        self.bias = 0.1 #bias başlangıçta negatif olursa relu ölür
-        self.activation = getattr(af, activation) #getattr iki parametre alır, birinci parametre modül ismi, ikinci parametre fonksiyon ismi string olarak verilir.
-        self.derivative = getattr(af, derivative) #activation ve derivative isimleri string olarak verilir.
+        self.bias = 0.1 # A negative initial bias can cause ReLU units to stop learning.
+        self.activation = getattr(af, activation) # getattr receives the module and function name.
+        self.derivative = getattr(af, derivative) # Activation and derivative names are passed as strings.
 
 
     def forward(self,input):
-        self.z = np.dot(input,self.weights)+self.bias #z = (x*w)+b
+        self.z = np.dot(input,self.weights)+self.bias # z = (x * w) + b
         self.output = self.activation(self.z)
         return self.output
 
-    #def mse_loss(y_true, y_pred):
+    # def mse_loss(y_true, y_pred):
 
     def gradient(self, x, y_true):
 
-        y_pred = self.output #aktivasyon fonksiyonundan gelen tahmin
+        y_pred = self.output # Prediction returned by the activation function.
 
-        dL_dy_pred = -2 * (y_true - y_pred) #loss fonkun sigmoid çıktısına göre türevi
+        dL_dy_pred = -2 * (y_true - y_pred) # Derivative of the loss with respect to the prediction.
         activation_func_der = self.derivative(self.z)
 
         # Chain rule
         ortak_turevler = dL_dy_pred * activation_func_der
-        gradient = ortak_turevler * x #(dz_dw)
+        gradient = ortak_turevler * x #(dz/dw)
 
-        bias_gradient = ortak_turevler * 1 #dz_db türevi b katsayısı 1 
+        bias_gradient = ortak_turevler * 1 # dz/db is 1.
 
         return gradient, bias_gradient
 

@@ -11,4 +11,4 @@ def relu(z):
     return np.maximum(0, z)
 
 def relu_derivative(z):
-    return np.where(np.asarray(z) > 0, 1.0, 0.0) #np.where(koşul, koşul_doğruysa, koşul_yanlışsa) 
+    return np.where(np.asarray(z) > 0, 1.0, 0.0) # np.where(condition, value_if_true, value_if_false)

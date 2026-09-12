@@ -27,8 +27,8 @@ print(neuron.weights)
 print(neuron.bias)
 print(output)
 print("===================")
-print("Tahmin:", output)
-print("Gerçek:", target)
+print("Prediction:", output)
+print("Target:", target)
 print("Loss:", loss)
 print("===================")
 print("Loss:", loss1)
@@ -45,8 +45,8 @@ gradient, bias_gradient = neuron.gradient(input, target)
 old_loss = mse_loss(target, neuron.forward(input))
 neuron.update(gradient, bias_gradient, 0.1)
 new_loss = mse_loss(target, neuron.forward(input))
-print("Eski loss:", old_loss)
-print("Yeni loss:", new_loss)
+print("Old loss:", old_loss)
+print("New loss:", new_loss)
 print("====================")
 """
 
@@ -58,10 +58,10 @@ target = 1
 
 def train(neuron, x, target, epochs, learning_rate):
     for epoch in range(epochs):
-        y_pred = neuron.forward(x) #relu ile tahmin
-        loss = mse_loss(target, y_pred) #ceza puanı
-        gradient, bias_gradient = neuron.gradient(x, target) #ne kadar düzeltme lazım
-        neuron.update(gradient, bias_gradient, learning_rate) #düzeltmeyi uygular
+        y_pred = neuron.forward(x) # Prediction from the neuron.
+        loss = mse_loss(target, y_pred) # Training loss point.
+        gradient, bias_gradient = neuron.gradient(x, target) # Calculate the required parameter updates.
+        neuron.update(gradient, bias_gradient, learning_rate) # Apply the parameter updates.
         if epoch % 1 == 0:
             print(f"Epoch {epoch}: prediction={y_pred:.6f}, loss={loss:.6f}")
 

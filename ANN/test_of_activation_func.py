@@ -1,5 +1,5 @@
 """
-#RELU FONKSİYONU DENEME
+# ReLU function experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     print("======RELU vs SİGMOİD=======")
 
-    z_values = np.linspace(-10, 10, 400) #-10 ile 10 araasında 400 tane nokta oluşturur
+    z_values = np.linspace(-10, 10, 400) # Create 400 points between -10 and 10.
 
     sigmoid_values = 1 / (1 + np.exp(-z_values))
     relu_values = np.maximum(0, z_values)
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 """
 
 
-#ÖNCE İMPORT CELL ÇALIŞTIRILIR!!!
+# Run the import cell first.
 
 # %%
 import numpy as np

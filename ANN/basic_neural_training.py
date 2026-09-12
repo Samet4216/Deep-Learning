@@ -21,11 +21,11 @@ import activation_functions as af
 
 class neuron():
 
-    def __init__(self, input_size, activation, derivate):
+    def __init__(self, input_size, activation, derivative):
         self.weights = np.random.randn(input_size) * 0.01
         self.bias = 0.1 #bias başlangıçta negatif olursa relu ölür
         self.activation = getattr(af, activation) #getattr iki parametre alır, birinci parametre modül ismi, ikinci parametre fonksiyon ismi string olarak verilir.
-        self.derivate = getattr(af, derivate) #activation ve derivate isimleri string olarak verilir.
+        self.derivative = getattr(af, derivative) #activation ve derivative isimleri string olarak verilir.
 
 
     def forward(self,input):
@@ -40,7 +40,7 @@ class neuron():
         y_pred = self.output #aktivasyon fonksiyonundan gelen tahmin
 
         dL_dy_pred = -2 * (y_true - y_pred) #loss fonkun sigmoid çıktısına göre türevi
-        activation_func_der = self.derivate(self.z)
+        activation_func_der = self.derivative(self.z)
 
         # Chain rule
         ortak_turevler = dL_dy_pred * activation_func_der

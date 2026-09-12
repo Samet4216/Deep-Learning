@@ -49,9 +49,9 @@ import matplotlib.pyplot as plt
 
 from activation_functions import (
     sigmoid,
-    sigmoid_derivate,
+    sigmoid_derivative,
     relu,
-    relu_derivate
+    relu_derivative
 )
 
 
@@ -67,9 +67,9 @@ plt.grid()
 plt.show()
 
 
-# %% Sigmoid derivate
+# %% Sigmoid derivative
 
-plt.plot(z, sigmoid_derivate(z))
+plt.plot(z, sigmoid_derivative(z))
 plt.title("Sigmoid Derivative")
 plt.xlabel("z")
 plt.ylabel("σ'(z)")
@@ -87,9 +87,9 @@ plt.grid()
 plt.show()
 
 
-# %% ReLU derivate
+# %% ReLU derivative
 
-plt.plot(z, relu_derivate(z))
+plt.plot(z, relu_derivative(z))
 plt.title("ReLU Derivative")
 plt.xlabel("z")
 plt.ylabel("ReLU'(z)")

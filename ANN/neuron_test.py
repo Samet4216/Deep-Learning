@@ -51,9 +51,6 @@ print("====================")
 """
 
 
-
-
-
 neuron = neuron(3, "sigmoid", "sigmoid_derivate")
 input = np.array([0.2, 0.1, 0.3])
 target = 1

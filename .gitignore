@@ -5,6 +5,7 @@ __pycache__/
 
 # Virtual environments
 .venv/
+.deep_venv/
 venv/
 env/
 *.env/
@@ -25,3 +26,5 @@ htmlcov/
 # OS files
 .DS_Store
 Thumbs.db
+
+images_readme

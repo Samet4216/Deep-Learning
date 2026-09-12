@@ -17,33 +17,21 @@ print(input)
 
 import numpy as np
 import random 
+import activation_functions as af
 
 class neuron():
 
     def __init__(self, input_size, activation, derivate):
         self.weights = np.random.randn(input_size) * 0.01
         self.bias = 0.1 #bias başlangıçta negatif olursa relu ölür
-        self.activation = getattr(self, activation)
-        self.derivate = getattr(self, derivate) #bir nesnenin medhodunu çağırmak için getattr kullanılır. activation ve derivate isimleri string olarak verilir.
+        self.activation = getattr(af, activation) #getattr iki parametre alır, birinci parametre modül ismi, ikinci parametre fonksiyon ismi string olarak verilir.
+        self.derivate = getattr(af, derivate) #activation ve derivate isimleri string olarak verilir.
 
 
     def forward(self,input):
-        self.z = np.dot(input,self.weights)+self.bias #z= (x*w)+b
+        self.z = np.dot(input,self.weights)+self.bias #z = (x*w)+b
         self.output = self.activation(self.z)
         return self.output
-
-    def sigmoid(self,z):
-        return 1/(1+np.exp(-z))
-
-    def sigmoid_derivate(self, z):
-        y_pred = self.sigmoid(z)
-        return y_pred * (1 - y_pred)
-
-    def relu(self,z):
-        return np.maximum(0, z)
-
-    def relu_derivate(self, z):
-        return 1.0 if z > 0 else 0.0
 
     #def mse_loss(y_true, y_pred):
 

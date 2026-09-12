@@ -52,7 +52,7 @@ print("====================")
 
 
 
-neuron = Neuron(3, "sigmoid", "sigmoid_derivative")
+neuron = Neuron(3, "relu", "relu_derivative")
 input = np.array([0.2, 0.1, 0.3])
 target = 1
 
@@ -106,4 +106,3 @@ for epoch in range(100):
             f"loss={loss:.6f}, weights={weights}, bias={bias:.6f}"
         )
 """
-

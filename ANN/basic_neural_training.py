@@ -19,14 +19,14 @@ import numpy as np
 import random 
 import activation_functions as af
 
-class neuron():
+class Neuron():
 
-    def __init__(self, input_size, activation, derivative):
+    def __init__(self, input_size, activation, derivative, alpha=0.01):
         self.weights = np.random.randn(input_size) * 0.01
         self.bias = 0.1 # A negative initial bias can cause ReLU units to stop learning.
         self.activation = getattr(af, activation) # getattr receives the module and function name.
         self.derivative = getattr(af, derivative) # Activation and derivative names are passed as strings.
-
+        self.alpha = alpha
 
     def forward(self,input):
         self.z = np.dot(input,self.weights)+self.bias # z = (x * w) + b
@@ -54,7 +54,30 @@ class neuron():
         self.weights -= learning_rate * gradient
         self.bias -= learning_rate * bias_gradient
 
-
 def mse_loss(y_true, y_pred):
     loss=(y_true-y_pred)**2
     return loss
+
+class Layer():
+
+    def __init__(self, input_size, neuron_count, activation, derivative):
+        self.neurons = []
+        for _ in range(neuron_count):
+            neuron = Neuron(input_size, activation, derivative)
+            self.neurons.append(neuron)
+
+    def forward(self, input): #neuron = Neuron(input_size, activation, derivative)
+        self.outputs=[] #forward results of all neurons in the layer
+        for neuron in (self.neurons):
+            self.output=neuron.forward(input) #neuron.forward(input) ==> Neuron(input_size, activation, derivative).forward(input)
+            self.outputs.append(self.output)
+        return self.outputs
+
+
+layer = Layer(3, 4, "relu", "relu_derivative")
+
+input = np.array([2.0, 1.0, 3.0])
+
+output = layer.forward(input)
+
+print(output)

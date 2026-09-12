@@ -46,18 +46,17 @@ if __name__ == "__main__":
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
-
 from activation_functions import (
     sigmoid,
     sigmoid_derivative,
     relu,
-    relu_derivative
+    relu_derivative,
+    leaky_relu,
+    leaky_relu_derivative
 )
-
+z = np.linspace(-10, 10, 200)
 
 # %% Sigmoid
-
-z = np.linspace(-10, 10, 200)
 
 plt.plot(z, sigmoid(z))
 plt.title("Sigmoid")
@@ -95,4 +94,26 @@ plt.xlabel("z")
 plt.ylabel("ReLU'(z)")
 plt.grid()
 plt.show()
+
+
+# %% Leaky ReLU 
+
+plt.plot(z, leaky_relu(z, alpha=0.01))
+plt.title("Leaky-ReLU Derivative")
+plt.xlabel("z")
+plt.ylabel("Leaky-ReLU'(z)")
+plt.grid()
+plt.show()
+
+
+# %% Leaky ReLU derivative
+
+plt.plot(z, leaky_relu_derivative(z, alpha=0.01))
+plt.title("Leaky-ReLU Derivative")
+plt.xlabel("z")
+plt.ylabel("Leaky-ReLU'(z)")
+plt.grid()
+plt.show()
+
+
 # %%

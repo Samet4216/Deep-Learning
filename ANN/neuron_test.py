@@ -1,5 +1,5 @@
 import numpy as np
-from basic_neural_training import neuron, mse_loss
+from basic_neural_training import Neuron, mse_loss, Layer
 
 
 """
@@ -27,8 +27,8 @@ print(neuron.weights)
 print(neuron.bias)
 print(output)
 print("===================")
-print("Prediction:", output)
-print("Target:", target)
+print("Tahmin:", output)
+print("Gerçek:", target)
 print("Loss:", loss)
 print("===================")
 print("Loss:", loss1)
@@ -45,14 +45,14 @@ gradient, bias_gradient = neuron.gradient(input, target)
 old_loss = mse_loss(target, neuron.forward(input))
 neuron.update(gradient, bias_gradient, 0.1)
 new_loss = mse_loss(target, neuron.forward(input))
-print("Old loss:", old_loss)
-print("New loss:", new_loss)
+print("Eski loss:", old_loss)
+print("Yeni loss:", new_loss)
 print("====================")
 """
 
 
 
-neuron = neuron(3, "sigmoid", "sigmoid_derivative")
+neuron = Neuron(3, "sigmoid", "sigmoid_derivative")
 input = np.array([0.2, 0.1, 0.3])
 target = 1
 
@@ -72,3 +72,38 @@ train(
     epochs=100,
     learning_rate=0.01
 )
+
+print("==================")
+"""
+print("Controlled Leaky ReLU training")
+
+x = np.array([1.0, 1.0, 1.0])
+target = 1.0
+
+weights = np.array([-1.0, -1.0, -1.0])
+bias = -1.0
+alpha = 0.01
+learning_rate = 0.01
+
+for epoch in range(100):
+    z = np.dot(x, weights) + bias
+    prediction = np.where(z > 0, z, alpha * z) # alpha * z => 1 for normally ReLU
+    loss = mse_loss(target, prediction)
+
+    d_loss_d_prediction = -2 * (target - prediction)
+    d_prediction_d_z = 1.0 if z > 0 else alpha
+    common_derivative = d_loss_d_prediction * d_prediction_d_z
+
+    gradient = common_derivative * x
+    bias_gradient = common_derivative
+
+    weights -= learning_rate * gradient
+    bias -= learning_rate * bias_gradient
+
+    if epoch % 10 == 0 or epoch == 99:
+        print(
+            f"Epoch {epoch}: prediction={prediction:.6f}, "
+            f"loss={loss:.6f}, weights={weights}, bias={bias:.6f}"
+        )
+"""
+

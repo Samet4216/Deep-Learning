@@ -12,3 +12,9 @@ def relu(z):
 
 def relu_derivative(z):
     return np.where(np.asarray(z) > 0, 1.0, 0.0) # np.where(condition, value_if_true, value_if_false)
+
+def leaky_relu(z, alpha):
+    return np.where(np.asarray(z) > 0, z, alpha * z)
+
+def leaky_relu_derivative(z, alpha):
+    return np.where(np.asarray(z) > 0, 1, alpha)

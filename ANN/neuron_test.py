@@ -1,6 +1,5 @@
 import numpy as np
-from basic_neural_training import Neuron, mse_loss, Layer
-
+#.\.deep_venv\Scripts\Activate.ps1
 
 """
 input = np.array([0.2, 0.1, 0.3])
@@ -51,7 +50,7 @@ print("====================")
 """
 
 
-
+"""
 neuron = Neuron(3, "relu", "relu_derivative")
 input = np.array([0.2, 0.1, 0.3])
 target = 1
@@ -74,6 +73,8 @@ train(
 )
 
 print("==================")
+"""
+
 """
 print("Controlled Leaky ReLU training")
 
@@ -106,3 +107,40 @@ for epoch in range(100):
             f"loss={loss:.6f}, weights={weights}, bias={bias:.6f}"
         )
 """
+
+from basic_neural_training import Layer, NeuralNetwork, mse_loss
+
+# TEST
+network = NeuralNetwork()
+
+network.add(Layer(3, 4, "relu", "relu_derivative"))
+network.add(Layer(4, 3, "relu", "relu_derivative"))
+
+input = np.array([2.0, 1.0, 3.0])
+target = np.array([1.0, 1.0, 1.0])
+"""
+loss = network.train_step(
+    input, 
+    target, 
+    learning_rate=0.1
+    )
+
+print("Initial loss:", loss)
+"""
+prediction_before = network.forward(input)
+loss_before = np.sum(mse_loss(target, prediction_before))
+
+network.fit(
+    input,
+    target,
+    epochs=5,
+    learning_rate=0.1
+)
+
+prediction_after = network.forward(input)
+loss_after = np.sum(mse_loss(target, prediction_after))
+
+print("Before:", prediction_before)
+print("Loss before:", loss_before)
+print("After:", prediction_after)
+print("Loss after:", loss_after)

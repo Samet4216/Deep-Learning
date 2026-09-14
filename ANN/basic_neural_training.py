@@ -47,7 +47,6 @@ class Neuron():
         gradient = dZ * input #(dz/dw) gradient of weights
 
         bias_gradient = dZ * 1 # dz/db is 1.
-
         return gradient, bias_gradient
 
     def update(self, gradient, bias_gradient, learning_rate):
@@ -144,7 +143,6 @@ class Layer():
             # bias 2 - 0.1*22 = -0.2
 """
 
-
 class NeuralNetwork():
 
     def __init__(self):
@@ -157,7 +155,6 @@ class NeuralNetwork():
         output = input # The output from the previous layer will be our input
         for layer in self.layers:
             output = layer.forward(output)
-
         return output
 
     def backward(self, dA):
@@ -170,18 +167,14 @@ class NeuralNetwork():
         for layer in self.layers:
             layer.update(learning_rate)
 
-#TEST
-network = NeuralNetwork()
+    def train_step(self, input, y_true, learning_rate):
+        y_pred = self.forward(input)
+        loss = np.sum(mse_loss(y_true, y_pred))
+        dA = -2 * (y_true - y_pred) # external dA input
 
-network.add(Layer(3, 4, "relu", "relu_derivative"))
-network.add(Layer(4, 3, "relu", "relu_derivative"))
-
-input = np.array([2.0, 1.0, 3.0])
-
-output = network.forward(input)
-
-print(output)
-print(output.shape)
+        self.backward(dA) # definition for later use 
+        self.update(learning_rate) # ""
+        return loss
 
 """    
 layer = Layer(input_size=3, neuron_count=4, activation="relu", derivative="relu_derivative")

@@ -18,6 +18,7 @@ print(input)
 import numpy as np
 import random 
 import activation_functions as af
+import matplotlib.pyplot as plt
 
 class Neuron():
 
@@ -66,18 +67,12 @@ class Layer():
             self.neurons.append(neuron)
 
     def forward(self, input): # neuron = Neuron(input_size, activation, derivative)
-        self.input = input
-
-        W = np.array([neuron.weights for neuron in self.neurons]).T # TRANPOSE(T)==> weight matrix 3*4 (3 in 4 out) to change 4*3 (4 in 3 out)
-        self.W = W
-        b = np.array([neuron.bias for neuron in self.neurons]) # bias matrix of the first layer
-        Z = np.dot(input, W) + b # outputs matrix
-        self.Z = Z
-        self.W = W
-        self.b = b
-
+        self.input = input # store the input for use in backpropagation
+        self.W = np.array([neuron.weights for neuron in self.neurons]).T # TRANPOSE(T)==> weight matrix 3*4 (3 in 4 out) to change 4*3 (4 in 3 out)
+        self.b = np.array([neuron.bias for neuron in self.neurons]) # bias matrix of the first layer
+        self.Z = np.dot(input, self.W) + self.b # outputs matrix
         activation = self.neurons[0].activation # assuming all neurons in the layer use the same activation function
-        self.outputs = activation(Z, alpha=self.neurons[0].alpha) # apply activation function to the outputs
+        self.outputs = activation(self.Z, alpha=self.neurons[0].alpha) # apply activation function to the outputs
         return self.outputs
 
     def backward(self, dA):
@@ -85,14 +80,9 @@ class Layer():
             self.Z,
             alpha=self.neurons[0].alpha
         ) # call the previously selected activation derivative with its parameter.
-        dZ = dA * activation_derivative # aktivation derivative and output derivative for dot product :D
-        dW = []
-        for x in (self.input):
-            row = []
-            for dz in dZ:
-                row.append(x * dz)
-            dW.append(row) #numpy lib outher func some func 
-            """ input = [2, 3, 1], dZ = [4, 22]
+        dZ = dA * activation_derivative # aktivation derivative and output derivative for dot product gradient :D
+        dW = np.dot(self.input.T, dZ)
+        """ input = [2, 3, 1], dZ = [4, 22]
             #
             # Start:
             # dW = []
@@ -106,12 +96,16 @@ class Layer():
             #  [12,66],
             #  [4,22]]
             """
-        dW = np.array(dW)
-        db = dZ #dL/db = dL/dZ * dZ/db(1) => dL/db = dL/dZ
         self.dW = dW
-        self.db = db
-        dA_pre = np.dot(dZ, self.W.T) # dL/dA => dL/dZ(dZ) * dZ/dW (W.transpoze) find weight gradient for last layer >>also<< input of first layer
-        return dW, db, dA_pre 
+        self.db = np.sum(dZ, axis=0) # axis=0 specifies that the operation is performed along the columns.
+        # it collects samples and produces a result for each neuron.
+            # Example: dZ = [[1, 2, 3, 4], [10, 20, 30, 40], [100, 200, 300, 400]]
+            # axis=0 sums the columns -> db = [111, 222, 333, 444] (one bias gradient per neuron)
+        dA_pre = np.dot(dZ, self.W.T)
+            # send the gradient back to the previous layer.
+            # dA_pre = dL/dA_pre = dZ @ W.T
+            # this tells us how much each input/previous-layer activation
+        return dW, self.db, dA_pre 
 
     def update(self, learning_rate):
         for i, neuron in enumerate(self.neurons):
@@ -176,10 +170,18 @@ class NeuralNetwork():
         self.update(learning_rate) # ""
         return loss
 
-"""    
-layer = Layer(input_size=3, neuron_count=4, activation="relu", derivative="relu_derivative")
-input = np.array([0.2, 0.1, 0.3])
-output = layer.forward(input)
-print("Output:", output)
-print("Output shape:", output.shape)
-"""
+    def fit(self, input, y_true, learning_rate, epochs):
+        loss_data = []
+        for epoch in range(epochs):
+            loss = self.train_step(input, y_true, learning_rate)
+            print(f"Epoch {epoch + 1}: Loss = {loss}")
+            loss_data.append(loss)
+        epoch_numbers = range(1, epochs + 1)
+        plt.plot(epoch_numbers, loss_data)
+        plt.xticks(np.arange(0, epochs + 1, 1)) # start, stop, step
+        plt.xlabel("Epochs") #named x label
+        plt.ylabel("Loss") #named y label
+        plt.title("Training Loss") #add title
+        plt.show() 
+        return loss_data
+

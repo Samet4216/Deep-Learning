@@ -109,7 +109,7 @@ for epoch in range(100):
 """
 
 from basic_neural_training import Layer, NeuralNetwork, mse_loss
-
+"""
 # TEST
 network = NeuralNetwork()
 
@@ -119,6 +119,7 @@ network.add(Layer(4, 3, "relu", "relu_derivative"))
 input = np.array([2.0, 1.0, 3.0])
 target = np.array([1.0, 1.0, 1.0])
 """
+"""
 loss = network.train_step(
     input, 
     target, 
@@ -126,7 +127,7 @@ loss = network.train_step(
     )
 
 print("Initial loss:", loss)
-"""
+
 prediction_before = network.forward(input)
 loss_before = np.sum(mse_loss(target, prediction_before))
 
@@ -144,3 +145,26 @@ print("Before:", prediction_before)
 print("Loss before:", loss_before)
 print("After:", prediction_after)
 print("Loss after:", loss_after)
+"""
+
+network = NeuralNetwork()
+network.add(Layer(input_size=3, neuron_count=4, activation="relu", derivative="relu_derivative"))
+input = np.array([
+    [2.0, 1.0, 3.0],
+    [4.0, 2.0, 1.0],
+    [1.0, 3.0, 2.0]
+])
+y_true = np.array([
+    [1.0, 0.0, 0.0, 1.0],
+    [0.0, 1.0, 1.0, 0.0],
+    [1.0, 1.0, 0.0, 0.0]
+])
+
+learning_rate = 0.01
+
+loss_data = network.fit(
+    input,
+    y_true,
+    learning_rate,
+    epochs=20
+)

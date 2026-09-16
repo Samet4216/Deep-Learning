@@ -166,5 +166,6 @@ loss_data = network.fit(
     input,
     y_true,
     learning_rate,
-    epochs=20
+    epochs=20,
+    batch_size=3
 )

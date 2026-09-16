@@ -55,7 +55,7 @@ class Neuron():
         self.bias -= learning_rate * bias_gradient
 
 def mse_loss(y_true, y_pred):
-    loss=(y_true-y_pred)**2
+    loss=np.mean((y_true-y_pred)**2)
     return loss
 
 class Layer():
@@ -163,19 +163,28 @@ class NeuralNetwork():
 
     def train_step(self, input, y_true, learning_rate):
         y_pred = self.forward(input)
-        loss = np.sum(mse_loss(y_true, y_pred))
-        dA = -2 * (y_true - y_pred) # external dA input
+        loss = mse_loss(y_true, y_pred)
+        dA = 2 * (y_pred - y_true) / y_true.size # derivative of mean squared error
+        # y_true.size => gives exactly the total number of elements. For example, if y_true.shape == (3,4): gives 12.
 
         self.backward(dA) # definition for later use 
         self.update(learning_rate) # ""
         return loss
 
-    def fit(self, input, y_true, learning_rate, epochs):
+    def fit(self, input, y_true, learning_rate, epochs, batch_size):
         loss_data = []
         for epoch in range(epochs):
-            loss = self.train_step(input, y_true, learning_rate)
-            print(f"Epoch {epoch + 1}: Loss = {loss}")
-            loss_data.append(loss)
+            epoch_loss = 0
+            for i in range(0, len(input), batch_size):
+                batch_input = input[i:i + batch_size]
+                batch_y_true = y_true[i:i + batch_size]
+                loss = self.train_step(batch_input, batch_y_true, learning_rate)
+                batch_num = batch_input.shape[0] # number of samples in last batch
+                epoch_loss += loss * batch_num  # Multiply by batch_num to get the total loss for the batch
+            loss_average = epoch_loss / len(input)  # Divide by the total number of samples to get the average loss for the epoch
+            print(f"Epoch {epoch + 1}: Loss = {loss_average:.6f}")
+            loss_data.append(loss_average)
+
         epoch_numbers = range(1, epochs + 1)
         plt.plot(epoch_numbers, loss_data)
         plt.xticks(np.arange(0, epochs + 1, 1)) # start, stop, step

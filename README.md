@@ -4,10 +4,13 @@ This repository contains a simple artificial neural network implementation built
 
 ## Project Structure
 
-- `ANN/activation_functions.py`: Activation functions and their derivatives.
-- `ANN/basic_neural_training.py`: A layered neural network with batch-based forward and backward propagation, gradient updates, and a configurable training loop.
-- `ANN/neuron_test.py`: Trains a neuron with the sigmoid activation function.
-- `ANN/test_of_activation_func.py`: Visualizes activation functions and their derivatives with Matplotlib.
+```text
+ANN/
+|-- activation_functions.py       # Activations and their derivatives
+|-- basic_neural_training.py      # Neuron, Layer, and NeuralNetwork classes
+|-- neuron_test.py                # Example network training script
+|-- test_of_activation_func.py    # Activation-function visualizations
+```
 
 ## Setup
 

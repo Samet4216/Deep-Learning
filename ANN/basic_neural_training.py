@@ -139,9 +139,10 @@ class Layer():
 
 class NeuralNetwork():
 
-    def __init__(self):
+    def __init__(self, optimizer):
         self.layers = []
-
+        self.optimizer = optimizer
+        
     def add(self, layer):
         self.layers.append(layer)
 
@@ -157,29 +158,32 @@ class NeuralNetwork():
             dA = dA_pre # layer-1 output is layer-2 input
             #for ex. Layer 1.backward([92,118,144]) || [92,118,144] is layer-2 input
     
-    def update(self, learning_rate):
+    def update(self):
         for layer in self.layers:
-            layer.update(learning_rate)
+            self.optimizer.update(layer)
 
-    def train_step(self, input, y_true, learning_rate):
+    def train_step(self, input, y_true):
         y_pred = self.forward(input)
         loss = mse_loss(y_true, y_pred)
         dA = 2 * (y_pred - y_true) / y_true.size # derivative of mean squared error
         # y_true.size => gives exactly the total number of elements. For example, if y_true.shape == (3,4): gives 12.
 
         self.backward(dA) # definition for later use 
-        self.update(learning_rate) # ""
+        self.update()
         return loss
 
-    def fit(self, input, y_true, learning_rate, epochs, batch_size):
+    def fit(self, input, y_true, epochs, batch_size):
         loss_data = []
         for epoch in range(epochs):
             epoch_loss = 0
+            indices = np.random.permutation(len(input)) # shuffle the indices of the input data
+            input = input[indices] # shuffle the input data
+            y_true = y_true[indices] # shuffle the target data
             for i in range(0, len(input), batch_size):
                 batch_input = input[i:i + batch_size]
                 batch_y_true = y_true[i:i + batch_size]
-                loss = self.train_step(batch_input, batch_y_true, learning_rate)
-                batch_num = batch_input.shape[0] # number of samples in last batch
+                loss = self.train_step(batch_input, batch_y_true)
+                batch_num = batch_input.shape[0] # number of samples in current batch
                 epoch_loss += loss * batch_num  # Multiply by batch_num to get the total loss for the batch
             loss_average = epoch_loss / len(input)  # Divide by the total number of samples to get the average loss for the epoch
             print(f"Epoch {epoch + 1}: Loss = {loss_average:.6f}")

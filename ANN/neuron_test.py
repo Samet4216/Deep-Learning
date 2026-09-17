@@ -109,6 +109,7 @@ for epoch in range(100):
 """
 
 from basic_neural_training import Layer, NeuralNetwork, mse_loss
+import optimizers 
 """
 # TEST
 network = NeuralNetwork()
@@ -147,7 +148,8 @@ print("After:", prediction_after)
 print("Loss after:", loss_after)
 """
 
-network = NeuralNetwork()
+optimizer = optimizers.momentum(learning_rate=0.1, beta=0.90)
+network = NeuralNetwork(optimizer)
 network.add(Layer(input_size=3, neuron_count=4, activation="relu", derivative="relu_derivative"))
 input = np.array([
     [2.0, 1.0, 3.0],
@@ -160,12 +162,9 @@ y_true = np.array([
     [1.0, 1.0, 0.0, 0.0]
 ])
 
-learning_rate = 0.01
-
 loss_data = network.fit(
     input,
     y_true,
-    learning_rate,
     epochs=20,
     batch_size=3
 )

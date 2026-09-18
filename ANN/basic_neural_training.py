@@ -141,7 +141,7 @@ class NeuralNetwork():
 
     def __init__(self, optimizer):
         self.layers = []
-        self.optimizer = optimizer
+        self.optimizer = optimizer #for ex. self.optimizer.time += 1 in update() method==> adam optimizer
         
     def add(self, layer):
         self.layers.append(layer)
@@ -159,6 +159,7 @@ class NeuralNetwork():
             #for ex. Layer 1.backward([92,118,144]) || [92,118,144] is layer-2 input
     
     def update(self):
+        self.optimizer.time += 1 # Increment the time step for bias correction in the ADAM optimizer.
         for layer in self.layers:
             self.optimizer.update(layer)
 

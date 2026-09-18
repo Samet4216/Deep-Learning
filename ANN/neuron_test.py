@@ -147,7 +147,7 @@ print("Loss before:", loss_before)
 print("After:", prediction_after)
 print("Loss after:", loss_after)
 """
-
+"""
 optimizer = optimizers.momentum(learning_rate=0.1, beta=0.90)
 network = NeuralNetwork(optimizer)
 network.add(Layer(input_size=3, neuron_count=4, activation="relu", derivative="relu_derivative"))
@@ -168,3 +168,28 @@ loss_data = network.fit(
     epochs=20,
     batch_size=3
 )
+"""
+
+optimizer = optimizers.Adam(learning_rate=0.1)
+network = NeuralNetwork(optimizer)
+network.add(Layer(3, 1, "relu", "relu_derivative"))
+
+input_data = np.array([
+    [2.0, 1.0, 3.0],
+    [4.0, 2.0, 1.0],
+    [1.0, 3.0, 2.0]
+])
+target = np.array([
+    [1.0],
+    [0.0],
+    [1.0]
+])
+
+loss_data = network.fit(
+    input_data,
+    target,
+    epochs=10,
+    batch_size=3
+)
+
+

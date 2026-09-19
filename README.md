@@ -1,15 +1,50 @@
 # Deep Learning
 
-This repository contains a simple artificial neural network implementation built with Python and NumPy.
+This repository is a step-by-step deep learning study project. Each chapter explores a different concept by implementing the underlying ideas with Python and NumPy before moving to high-level frameworks.
+
+## Chapter 1 — Artificial Neural Networks
+
+**Status: Completed**
+
+The goal of Chapter 1 was to understand the basic mechanics of an artificial neural network by building the training pipeline from scratch.
+
+### What We Built
+
+- Computational neurons with weights and bias
+- ReLU, Leaky ReLU, and Sigmoid activation functions with derivatives
+- Dense layers and vectorized forward propagation
+- Mean Squared Error loss
+- Gradient calculation and gradient descent
+- Backpropagation using the chain rule
+- Mini-batch training with shuffled batch indices
+- SGD, Momentum, and Adam optimizers
+- A multi-layer neural network API with `fit()` and `predict()` methods
+- XOR gate training with a `2-4-1` network
+- Numerical versus analytical gradient checking
+- A comparison of Adam and SGD optimizer behavior
+
+### Results
+
+The network successfully learned the XOR relationship. The experiment also demonstrated the dying ReLU problem: when hidden units became inactive, the model could not distinguish some samples. Replacing ReLU with Leaky ReLU allowed gradients to continue flowing and produced correct XOR predictions.
+
+The analytical and numerical gradients were also compared, with a very small difference, confirming that the implemented backpropagation was working as expected.
 
 ## Project Structure
 
 ```text
-ANN/
-|-- activation_functions.py       # Activations and their derivatives
-|-- basic_neural_training.py      # Neuron, Layer, and NeuralNetwork classes
-|-- neuron_test.py                # Example network training script
-|-- test_of_activation_func.py    # Activation-function visualizations
+Deep Learning/
+├── ANN/                       # Completed Chapter 1: ANN fundamentals
+│   ├── activation_functions.py
+│   ├── basic_neural_training.py
+│   ├── compare.py             # Adam vs. SGD comparison
+│   ├── loss_functions.py
+│   ├── neuron_test.py
+│   ├── optimizers.py
+│   ├── test_of_activation_func.py
+│   ├── xor_gate.py
+│   └── README.md              # Detailed Chapter 1 documentation
+├── images_readme/
+└── README.md
 ```
 
 ## Setup
@@ -27,21 +62,22 @@ Install the dependencies:
 python -m pip install numpy matplotlib
 ```
 
-## Run
+## Run Chapter 1 Examples
 
-Run the neuron training example from the project root:
+Run the XOR gate experiment:
+
+```powershell
+python ANN\xor_gate.py
+```
+
+Run the optimizer comparison:
+
+```powershell
+python ANN\compare.py
+```
+
+Run the neural-network test script:
 
 ```powershell
 python ANN\neuron_test.py
 ```
-
-Run the layered batch-training implementation from the project root:
-
-```powershell
-python ANN\basic_neural_training.py
-```
-
-The network processes multiple samples at once using matrix operations. Its `fit()` method combines forward propagation, loss calculation, backward propagation, parameter updates, and training-loss visualization. The number of training epochs can be provided by the caller.
-
-To view the activation function plots, open `ANN/test_of_activation_func.py` in VS Code and run the cells in order, starting with the import cell.
-

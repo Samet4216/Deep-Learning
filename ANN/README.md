@@ -200,10 +200,10 @@ Each column of `W` corresponds to one neuron.
 The current loss is Mean Squared Error:
 
 $$
-L = \operatorname{mean}\left((y_{\text{true}}-y_{\text{pred}})^2\right)
+L = \frac{1}{N}\sum_{i=1}^{N}\left(y_{\text{true},i}-y_{\text{pred},i}\right)^2
 $$
 
-Implemented separately in `losses.py`.
+Implemented separately in `loss_functions.py`.
 
 The derivative used during training is:
 

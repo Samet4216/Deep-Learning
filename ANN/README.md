@@ -383,11 +383,7 @@ $$
 Then the parameter update is:
 
 $$
-\theta_t=
-\theta_{t-1}
--
-\eta
-\frac{\hat m_t}{\sqrt{\hat v_t}+\epsilon}
+	heta_t = \theta_{t-1} - \eta\frac{\hat m_t}{\sqrt{\hat v_t}+\epsilon}
 $$
 
 Adam keeps its optimizer state separately from the layers.

@@ -14,11 +14,9 @@ input=neuron(
 )
 print(input)
 """
-
 import numpy as np
-import random 
 import activation_functions as af
-import matplotlib.pyplot as plt
+import loss_functions 
 
 class Neuron():
 
@@ -53,10 +51,6 @@ class Neuron():
     def update(self, gradient, bias_gradient, learning_rate):
         self.weights -= learning_rate * gradient
         self.bias -= learning_rate * bias_gradient
-
-def mse_loss(y_true, y_pred):
-    loss=np.mean((y_true-y_pred)**2)
-    return loss
 
 class Layer():
 
@@ -105,20 +99,19 @@ class Layer():
             # send the gradient back to the previous layer.
             # dA_pre = dL/dA_pre = dZ @ W.T
             # this tells us how much each input/previous-layer activation
-        return dW, self.db, dA_pre 
+        return dA_pre 
+    """  NOW, WORKİNG=> ====NeuralNetwork.update() => optimizer.update(layer)=== 
 
     def update(self, learning_rate):
         for i, neuron in enumerate(self.neurons):
             neuron.weights -= learning_rate * self.dW[:, i] # For i=0, update the neuron's weights. dW[:, i] selects all rows in column i.
-            neuron.bias -= learning_rate * self.db[i]
-"""         # Example:
-            # dW =
-            # [[ 8, 44],
-            #  [12, 66],
-            #  [ 4, 22]]
+            # Example:
+            # dW = [[ 8, 44],
+                #  [12, 66],
+                #  [ 4, 22]]
             #
             #because TRANSPOSE(T) weight matrix 3*4 (3 in 4 out) to change 4*3 (4 in 3 out)
-            3
+            3*4 = 12 elements
             # dW[:,0] → [8,12,4]   → gradients of neuron 0
             # dW[:,1] → [44,66,22] → gradients of neuron 1
             #
@@ -135,8 +128,8 @@ class Layer():
             # neuron 1:
             # weights [4,5,6] - 0.1*[44,66,22] = [-0.4,-1.6,3.8]
             # bias 2 - 0.1*22 = -0.2
-"""
 
+        """
 class NeuralNetwork():
 
     def __init__(self, optimizer):
@@ -152,20 +145,22 @@ class NeuralNetwork():
             output = layer.forward(output)
         return output
 
+    def predict(self, inputs):
+        return self.forward(input=inputs)
+
     def backward(self, dA):
         for layer in reversed(self.layers):
-            dW, db, dA_pre = layer.backward(dA) #dA => last layer output
-            dA = dA_pre # layer-1 output is layer-2 input
+            dA = layer.backward(dA) #dA => last layer output
             #for ex. Layer 1.backward([92,118,144]) || [92,118,144] is layer-2 input
     
     def update(self):
-        self.optimizer.time += 1 # Increment the time step for bias correction in the ADAM optimizer.
+        self.optimizer.step()
         for layer in self.layers:
             self.optimizer.update(layer)
 
-    def train_step(self, input, y_true):
-        y_pred = self.forward(input)
-        loss = mse_loss(y_true, y_pred)
+    def train_step(self, X, y_true):
+        y_pred = self.forward(X)
+        loss = loss_functions.mse_loss(y_true, y_pred)
         dA = 2 * (y_pred - y_true) / y_true.size # derivative of mean squared error
         # y_true.size => gives exactly the total number of elements. For example, if y_true.shape == (3,4): gives 12.
 
@@ -173,29 +168,20 @@ class NeuralNetwork():
         self.update()
         return loss
 
-    def fit(self, input, y_true, epochs, batch_size):
+    def fit(self, X, y_true, epochs, batch_size):
         loss_data = []
         for epoch in range(epochs):
             epoch_loss = 0
-            indices = np.random.permutation(len(input)) # shuffle the indices of the input data
-            input = input[indices] # shuffle the input data
-            y_true = y_true[indices] # shuffle the target data
-            for i in range(0, len(input), batch_size):
-                batch_input = input[i:i + batch_size]
-                batch_y_true = y_true[i:i + batch_size]
+            indices = np.random.permutation(len(X)) # shuffle the indices of the input data
+            for i in range(0, len(X), batch_size):
+                batch_indices = indices[i:i + batch_size]
+                batch_input = X[batch_indices]
+                batch_y_true = y_true[batch_indices]
                 loss = self.train_step(batch_input, batch_y_true)
                 batch_num = batch_input.shape[0] # number of samples in current batch
                 epoch_loss += loss * batch_num  # Multiply by batch_num to get the total loss for the batch
-            loss_average = epoch_loss / len(input)  # Divide by the total number of samples to get the average loss for the epoch
+            loss_average = epoch_loss / len(X)  # Divide by the total number of samples to get the average loss for the epoch
             print(f"Epoch {epoch + 1}: Loss = {loss_average:.6f}")
             loss_data.append(loss_average)
-
-        epoch_numbers = range(1, epochs + 1)
-        plt.plot(epoch_numbers, loss_data)
-        plt.xticks(np.arange(0, epochs + 1, 1)) # start, stop, step
-        plt.xlabel("Epochs") #named x label
-        plt.ylabel("Loss") #named y label
-        plt.title("Training Loss") #add title
-        plt.show() 
         return loss_data
 

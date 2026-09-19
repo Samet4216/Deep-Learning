@@ -4,16 +4,22 @@ class SGD:
     def __init__(self, learning_rate):
         self.learning_rate = learning_rate
 
+    def step(self):
+        pass  # No state to update for SGD
+
     def update(self, layer):
         for i,neuron in enumerate(layer.neurons):
             neuron.weights -= self.learning_rate * layer.dW[:, i] # For i=0, update the neuron's weights. dW[:, i] selects all rows in column i.
             neuron.bias -= self.learning_rate * layer.db[i]
 
-class momentum:
+class Momentum:
     def __init__(self, learning_rate, beta):
         self.learning_rate = learning_rate
         self.beta = beta
         self.velocity = {}
+
+    def step(self):
+        pass  # No state to update for momentum
 
     def update(self, layer):
         if layer not in self.velocity: # check if the layer is already in the velocity dictionary
@@ -62,6 +68,9 @@ class Adam:
         ├─ batch 1 → time = 11
         └─ ...
         """
+
+    def step(self):
+        self.time += 1 # Increment the time step for bias correction in the ADAM optimizer.
 
     def update(self, layer):
         if layer not in self.m_weights:

@@ -108,7 +108,8 @@ for epoch in range(100):
         )
 """
 
-from basic_neural_training import Layer, NeuralNetwork, mse_loss
+from basic_neural_training import Layer, NeuralNetwork
+from loss_functions import mse_loss
 import optimizers 
 """
 # TEST

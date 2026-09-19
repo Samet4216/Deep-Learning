@@ -208,9 +208,7 @@ Implemented separately in `loss_functions.py`.
 The derivative used during training is:
 
 $$
-\frac{\partial L}{\partial A}
-=
-\frac{2(A-y)}{N}
+\frac{\partial L}{\partial A} = \frac{2(A-y)}{N}
 $$
 
 where `N` is the total number of elements being averaged.

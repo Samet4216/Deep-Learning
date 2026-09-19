@@ -43,9 +43,19 @@ Deep Learning/
 │   ├── test_of_activation_func.py
 │   ├── xor_gate.py
 │   └── README.md              # Detailed Chapter 1 documentation
+├── pdf/                       # Chapter 1 PDF notes and images
+│   ├── README.md
+│   └── chapter-1.pdf
 ├── images_readme/
 └── README.md
 ```
+
+## Chapter 1 PDF
+
+The complete Chapter 1 notes are also available as a downloadable PDF, together with the images used to document the work.
+
+- [Open the Chapter 1 PDF](pdf/chapter-1.pdf)
+- [View the PDF notes and images](pdf/README.md)
 
 ## Setup
 

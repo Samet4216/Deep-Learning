@@ -158,8 +158,8 @@ class NeuralNetwork():
         for layer in self.layers:
             self.optimizer.update(layer)
 
-    def train_step(self, X, y_true):
-        y_pred = self.forward(X)
+    def train_step(self, input, y_true):
+        y_pred = self.forward(input)
         loss = loss_functions.mse_loss(y_true, y_pred)
         dA = 2 * (y_pred - y_true) / y_true.size # derivative of mean squared error
         # y_true.size => gives exactly the total number of elements. For example, if y_true.shape == (3,4): gives 12.
@@ -168,20 +168,27 @@ class NeuralNetwork():
         self.update()
         return loss
 
-    def fit(self, X, y_true, epochs, batch_size):
+    def fit(self, input, y_true, epochs, batch_size, validation_data=None):
+        if validation_data is not None:
+            validation_input, validation_target = validation_data # Unpack the validation data
         loss_data = []
         for epoch in range(epochs):
             epoch_loss = 0
-            indices = np.random.permutation(len(X)) # shuffle the indices of the input data
-            for i in range(0, len(X), batch_size):
+            indices = np.random.permutation(len(input)) # shuffle the indices of the input data
+            for i in range(0, len(input), batch_size):
                 batch_indices = indices[i:i + batch_size]
-                batch_input = X[batch_indices]
+                batch_input = input[batch_indices]
                 batch_y_true = y_true[batch_indices]
                 loss = self.train_step(batch_input, batch_y_true)
                 batch_num = batch_input.shape[0] # number of samples in current batch
                 epoch_loss += loss * batch_num  # Multiply by batch_num to get the total loss for the batch
-            loss_average = epoch_loss / len(X)  # Divide by the total number of samples to get the average loss for the epoch
+            loss_average = epoch_loss / len(input)  # Divide by the total number of samples to get the average loss for the epoch
             print(f"Epoch {epoch + 1}: Loss = {loss_average:.6f}")
             loss_data.append(loss_average)
         return loss_data
+
+    def evaluate (self, input, y_true, func=loss_functions.mse_loss): # func=> which loss function to use for evaluation, default is mean squared error
+        y_pred = self.forward(input)
+        loss = func(y_true, y_pred)
+        return loss
 

@@ -55,24 +55,26 @@ print("Difference:", np.abs(analytic_gradient - numerical_gradients))
 
 network.layers[0].neurons[0].weights = original_weights
 """
-loss_data = network.fit(
+history = network.fit(
     input_data,
     target,
     epochs=1000,
     batch_size=4
 )
+loss_data = history["loss"]
+val_loss_data = history["val_loss"]
 print("epochs =", len(loss_data))
 prediction = network.predict(input_data)
 print(prediction)
 
 epoch_numbers = range(1, len(loss_data) + 1)
-
+"""
 plt.plot(epoch_numbers, loss_data)
 plt.xlabel("Epochs")
 plt.ylabel("Loss")
 plt.title("XOR Training Loss")
 plt.show()
-
+"""
 #RESULT:
 #  epochs = 1000
 # [[0.0036851 ]

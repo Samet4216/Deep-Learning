@@ -172,6 +172,7 @@ class NeuralNetwork():
         if validation_data is not None:
             validation_input, validation_target = validation_data # Unpack the validation data
         loss_data = []
+        val_loss_data = []
         for epoch in range(epochs):
             epoch_loss = 0
             indices = np.random.permutation(len(input)) # shuffle the indices of the input data
@@ -185,7 +186,19 @@ class NeuralNetwork():
             loss_average = epoch_loss / len(input)  # Divide by the total number of samples to get the average loss for the epoch
             print(f"Epoch {epoch + 1}: Loss = {loss_average:.6f}")
             loss_data.append(loss_average)
-        return loss_data
+            if validation_data is not None:
+                validation_loss = self.evaluate(
+                    validation_input,
+                    validation_target,
+                    func=loss_functions.mse_loss 
+                )
+                val_loss_data.append(validation_loss)
+                print(f"Validation Loss = {validation_loss:.6f}")
+        history = {
+            "loss": loss_data,
+            "val_loss": val_loss_data
+        }
+        return history
 
     def evaluate (self, input, y_true, func=loss_functions.mse_loss): # func=> which loss function to use for evaluation, default is mean squared error
         y_pred = self.forward(input)

@@ -20,3 +20,9 @@ def leaky_relu(z, alpha=None):
 def leaky_relu_derivative(z, alpha=None):
     alpha = 0.01 if alpha is None else alpha
     return np.where(np.asarray(z) > 0, 1, alpha)
+
+def linear(z, alpha=None):
+    return z
+
+def linear_derivative(z, alpha=None):
+    return np.ones_like(z)

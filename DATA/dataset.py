@@ -58,28 +58,30 @@ def split_dataset(X, y, train_ratio, validation_ratio, seed=None):
 
 
     return (X_train, y_train, X_validation, y_validation, X_test, y_test)
-##Test##
-X = np.arange(300).reshape(100, 3) # Create a 100x3 array of integers from 0 to 299
-y = np.arange(100).reshape(100, 1)
 
-X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(
-    X,
-    y,
-    train_ratio=0.70,
-    validation_ratio=0.15,
-    seed=42
-)
-print("X_train:", X_train.shape)
-print("y_train:", y_train.shape)
+if __name__ == "__main__":
+    ##Test##
+    X = np.arange(300).reshape(100, 3) # Create a 100x3 array of integers from 0 to 299
+    y = np.arange(100).reshape(100, 1)
 
-print("X_val:", X_val.shape)
-print("y_val:", y_val.shape)
+    X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(
+        X,
+        y,
+        train_ratio=0.70,
+        validation_ratio=0.15,
+        seed=42
+    )
+    print("X_train:", X_train.shape)
+    print("y_train:", y_train.shape)
 
-print("X_test:", X_test.shape)
-print("y_test:", y_test.shape)
+    print("X_val:", X_val.shape)
+    print("y_val:", y_val.shape)
 
-print(
-    "Total samples:",
-    len(X_train) + len(X_val) + len(X_test)
-)
-print(np.array_equal(X_train[:, 0] // 3, y_train[:, 0]))
+    print("X_test:", X_test.shape)
+    print("y_test:", y_test.shape)
+
+    print(
+        "Total samples:",
+        len(X_train) + len(X_val) + len(X_test)
+    )
+    print(np.array_equal(X_train[:, 0] // 3, y_train[:, 0]))

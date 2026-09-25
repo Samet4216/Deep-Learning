@@ -69,7 +69,7 @@ class Layer():
         self.outputs = activation(self.Z, alpha=self.neurons[0].alpha) # apply activation function to the outputs
         return self.outputs
 
-    def backward(self, dA):
+    def backward(self, dA, L2_lambda=0.0):
         activation_derivative = self.neurons[0].derivative(
             self.Z,
             alpha=self.neurons[0].alpha
@@ -90,6 +90,8 @@ class Layer():
             #  [12,66],
             #  [4,22]]
             """
+        if L2_lambda > 0.0:
+            dW += L2_lambda * self.W
         self.dW = dW
         self.db = np.sum(dZ, axis=0) # axis=0 specifies that the operation is performed along the columns.
         # it collects samples and produces a result for each neuron.
@@ -97,8 +99,8 @@ class Layer():
             # axis=0 sums the columns -> db = [111, 222, 333, 444] (one bias gradient per neuron)
         dA_pre = np.dot(dZ, self.W.T)
             # send the gradient back to the previous layer.
-            # dA_pre = dL/dA_pre = dZ @ W.T
-            # this tells us how much each input/previous-layer activation
+                # dA_pre = dL/dA_pre = dZ @ W.T
+                # this tells us how much each input/previous-layer activation
         return dA_pre 
     """  NOW, WORKİNG=> ====NeuralNetwork.update() => optimizer.update(layer)=== 
 
@@ -132,10 +134,11 @@ class Layer():
         """
 class NeuralNetwork():
 
-    def __init__(self, optimizer):
+    def __init__(self, optimizer, L2_lambda=0.0):
         self.layers = []
         self.optimizer = optimizer #for ex. self.optimizer.time += 1 in update() method==> adam optimizer
-        
+        self.L2_lambda = L2_lambda
+
     def add(self, layer):
         self.layers.append(layer)
 
@@ -150,7 +153,7 @@ class NeuralNetwork():
 
     def backward(self, dA):
         for layer in reversed(self.layers):
-            dA = layer.backward(dA) #dA => last layer output
+            dA = layer.backward(dA, L2_lambda=self.L2_lambda) #dA => last layer output
             #for ex. Layer 1.backward([92,118,144]) || [92,118,144] is layer-2 input
     
     def update(self):
@@ -161,6 +164,8 @@ class NeuralNetwork():
     def train_step(self, input, y_true):
         y_pred = self.forward(input)
         loss = loss_functions.mse_loss(y_true, y_pred)
+        if self.L2_lambda > 0.0:
+            loss += self.L2_lambda * sum(np.sum(layer.W**2) for layer in self.layers) / 2
         dA = 2 * (y_pred - y_true) / y_true.size # derivative of mean squared error
         # y_true.size => gives exactly the total number of elements. For example, if y_true.shape == (3,4): gives 12.
 

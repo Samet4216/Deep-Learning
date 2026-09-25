@@ -1,6 +1,6 @@
 # Chapter 2: Data & Regression — Progress Report
 
-This module handles dataset preparation, splitting, and feature scaling for the end-to-end regression pipeline.
+This module handles dataset preparation, splitting, feature scaling, and regularization techniques for the end-to-end regression pipeline.
 
 ---
 
@@ -15,18 +15,19 @@ DATA/
 
 ---
 
-## 2. Chapter 2 Roadmap & Progress
+## 2. Chapter 2 Comprehensive Roadmap & Progress
 
-| Topic | Status | Implementation / Notes |
-| :--- | :---: | :--- |
-| **2.1 Dataset Logic** | **Completed** | Sample, Feature, Target definitions. Matrix representations ($X, y$). |
-| **2.2 Train / Val / Test Split** | **Completed** | `split_dataset()` utility with strict ratio validation and no data leakage. |
-| **2.3 Feature Scaling** | **Completed** | `MinMaxScaler` ($[0, 1]$) and `StandardScaler` (Z-score) with `fit`, `transform`, `inverse_transform`. |
-| **2.4 Linear Regression** | **Completed** | Single-neuron linear network ($y = XW + b$) learning true parameters ($w, b$). |
-| **2.5 Nonlinear Regression** | **Completed** | 16-neuron hidden layer + Leaky ReLU solving parabolic data with **96.6% loss reduction** over linear baseline (`TEST/linear_vs_non-linear.py`). |
-| **2.6 Underfitting & Overfitting** | **In Progress** | Investigating model complexity, loss curves (Train vs Val), and generalization. |
-| **2.7 Model Evaluation** | **Upcoming** | MSE, MAE, Prediction vs Actual plots, and generalization metrics. |
-| **Final Project: Motor Predictor** | **Upcoming** | Full ML pipeline predicting motor RPM from Temperature, Voltage, Current, and Load. |
+| Topic | Sub-topics | Status | Implementation / Notes |
+| :--- | :--- | :---: | :--- |
+| **2.1 Dataset Logic** | Sample, Feature, Target, Shapes ($X, y$) | **Completed** | Solidified matrix dimensions and data representations. |
+| **2.2 Train / Val / Test Split** | Ratios, Data Leakage Prevention | **Completed** | `split_dataset()` with strict ratio assertions and seed support. |
+| **2.3 Feature Scaling** | Min-Max Normalization vs Standardization | **Completed** | `MinMaxScaler` and `StandardScaler` with inverse transformation. |
+| **2.4 Linear Regression** | Single-neuron $y = XW + b$, Loss & Gradients | **Completed** | Verified analytical parameter recovery ($w \approx [3, -2, 5], b \approx 10$). |
+| **2.5 Nonlinear Regression** | Hidden Layer, Non-linear Activation, Universal Approximation | **Completed** | 16-neuron Hidden Layer + Leaky ReLU achieved **96.6% loss reduction** over linear baseline. |
+| **2.6 Underfitting & Overfitting** | Bias-Variance Tradeoff, Loss Curves (Train vs Val) | **In Progress** | Deep theoretical and practical analysis of model complexity. |
+| **2.6.1 Regularization & Anti-Overfitting** | L2 Regularization (Weight Decay), L1, Dropout, Early Stopping | **In Progress** | Mathematical formulation, backpropagation integration, and code design. |
+| **2.7 Model Evaluation & Metrics** | MSE, RMSE, MAE, $R^2$ Score, Residual Plots | **Upcoming** | Quantitative and visual metrics to assess generalization. |
+| **Chapter 2 Final Project** | `motor_performance_predictor` Pipeline | **Upcoming** | Raw Data $\to$ Split $\to$ Scale $\to$ Regularized ANN $\to$ Evaluate $\to$ Predict. |
 
 ---
 

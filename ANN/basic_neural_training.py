@@ -69,7 +69,7 @@ class Layer():
         self.outputs = activation(self.Z, alpha=self.neurons[0].alpha) # apply activation function to the outputs
         return self.outputs
 
-    def backward(self, dA, L2_lambda=0.0):
+    def backward(self, dA,L1_lambda=0.0, L2_lambda=0.0):
         activation_derivative = self.neurons[0].derivative(
             self.Z,
             alpha=self.neurons[0].alpha
@@ -90,6 +90,8 @@ class Layer():
             #  [12,66],
             #  [4,22]]
             """
+        if L1_lambda > 0.0:
+            dW += L1_lambda * np.sign(self.W)
         if L2_lambda > 0.0:
             dW += L2_lambda * self.W
         self.dW = dW
@@ -134,9 +136,10 @@ class Layer():
         """
 class NeuralNetwork():
 
-    def __init__(self, optimizer, L2_lambda=0.0):
+    def __init__(self, optimizer, L1_lambda=0.0, L2_lambda=0.0):
         self.layers = []
         self.optimizer = optimizer #for ex. self.optimizer.time += 1 in update() method==> adam optimizer
+        self.L1_lambda = L1_lambda
         self.L2_lambda = L2_lambda
 
     def add(self, layer):
@@ -153,7 +156,7 @@ class NeuralNetwork():
 
     def backward(self, dA):
         for layer in reversed(self.layers):
-            dA = layer.backward(dA, L2_lambda=self.L2_lambda) #dA => last layer output
+            dA = layer.backward(dA, L1_lambda=self.L1_lambda, L2_lambda=self.L2_lambda) #dA => last layer output
             #for ex. Layer 1.backward([92,118,144]) || [92,118,144] is layer-2 input
     
     def update(self):
@@ -164,6 +167,8 @@ class NeuralNetwork():
     def train_step(self, input, y_true):
         y_pred = self.forward(input)
         loss = loss_functions.mse_loss(y_true, y_pred)
+        if self.L1_lambda > 0.0:
+            loss += self.L1_lambda * sum(np.sum(np.abs(layer.W)) for layer in self.layers)
         if self.L2_lambda > 0.0:
             loss += self.L2_lambda * sum(np.sum(layer.W**2) for layer in self.layers) / 2
         dA = 2 * (y_pred - y_true) / y_true.size # derivative of mean squared error

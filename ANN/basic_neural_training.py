@@ -193,11 +193,17 @@ class NeuralNetwork():
         self.update()
         return loss
 
-    def fit(self, input, y_true, epochs, batch_size, validation_data=None):
+    def fit(self, input, y_true, epochs, batch_size, validation_data=None, patience=None, min_delta=0.0, restore_best_weights=True):
         if validation_data is not None:
             validation_input, validation_target = validation_data # Unpack the validation data
         loss_data = []
         val_loss_data = []
+
+        best_val_loss = np.inf #infinitw loss score at the start
+        best_weights = None
+        best_epoch = 0
+        wait = 0
+
         for epoch in range(epochs):
             epoch_loss = 0
             indices = np.random.permutation(len(input)) # shuffle the indices of the input data
@@ -211,6 +217,7 @@ class NeuralNetwork():
             loss_average = epoch_loss / len(input)  # Divide by the total number of samples to get the average loss for the epoch
             print(f"Epoch {epoch + 1}: Loss = {loss_average:.6f}")
             loss_data.append(loss_average)
+
             if validation_data is not None:
                 validation_loss = self.evaluate(
                     validation_input,
@@ -219,6 +226,23 @@ class NeuralNetwork():
                 )
                 val_loss_data.append(validation_loss)
                 print(f"Validation Loss = {validation_loss:.6f}")
+
+                if patience is not None:
+                    if validation_loss < (best_val_loss - min_delta):
+                        best_val_loss = validation_loss
+                        best_epoch = epoch + 1
+                        wait = 0
+                        if restore_best_weights:
+                            best_weights = self.get_weights()
+                    else:
+                        wait += 1
+                        if wait >= patience:
+                            print(f"\n[EARLY STOPPING] Stopped at epoch {epoch + 1}")
+                            print(f"[EARLY STOPPING] Best score was at epoch {best_epoch} (Val Loss: {best_val_loss:.6f})")
+                            if restore_best_weights and best_weights is not None:
+                                print(f"[EARLY STOPPING] Restored best weights from epoch {best_epoch}.")
+                                self.set_weights(best_weights)
+                            break
         history = {
             "loss": loss_data,
             "val_loss": val_loss_data
@@ -229,4 +253,18 @@ class NeuralNetwork():
         y_pred = self.forward(input, training=False) #dont use dropout => not training step so False
         loss = func(y_true, y_pred)
         return loss
+    
+    def get_weights(self): #create copy weights and biases of the neurons in all layers
+        weights = []
+        for layer in self.layers:
+            layer_weight = [(neuron.weights.copy(), neuron.bias) for neuron in layer.neurons]
+            weights.append(layer_weight)
+        return weights
 
+    def set_weights(self, saved_weights):
+        for layer, layer_weight in zip(self.layers, saved_weights): #pair each layer with its saved weights
+            for neuron, (weight, bias) in zip(layer.neurons, layer_weight): #step through each neuron in the layer and restore its weights and bias.. (weight, bias)=>saved_weights
+                neuron.weights = weight.copy()
+                neuron.bias = bias
+            layer.W = np.array([neuron.weights for neuron in layer.neurons]).T
+            layer.b = np.array([neuron.bias for neuron in layer.neurons])

@@ -54,22 +54,37 @@ class Neuron():
 
 class Layer():
 
-    def __init__(self, input_size, neuron_count, activation, derivative, alpha=None):
+    def __init__(self, input_size, neuron_count, activation, derivative, alpha=None, dropout_rate=0.0):
         self.neurons = []
         for _ in range(neuron_count):
             neuron = Neuron(input_size, activation, derivative, alpha)
             self.neurons.append(neuron)
+        self.dropout_rate = dropout_rate
+        self.mask = None # store the mask for use in backpropagation 
 
-    def forward(self, input): # neuron = Neuron(input_size, activation, derivative)
+    def forward(self, input, training=True): # neuron = Neuron(input_size, activation, derivative)
         self.input = input # store the input for use in backpropagation
         self.W = np.array([neuron.weights for neuron in self.neurons]).T # TRANPOSE(T)==> weight matrix 3*4 (3 in 4 out) to change 4*3 (4 in 3 out)
         self.b = np.array([neuron.bias for neuron in self.neurons]) # bias matrix of the first layer
         self.Z = np.dot(input, self.W) + self.b # outputs matrix
         activation = self.neurons[0].activation # assuming all neurons in the layer use the same activation function
         self.outputs = activation(self.Z, alpha=self.neurons[0].alpha) # apply activation function to the outputs
+
+        if training and self.dropout_rate > 0.0: # because only use dropout training and dont use test time
+            self.mask = (np.random.rand(*self.outputs.shape) >= self.dropout_rate) / (1.0 - self.dropout_rate) #random.randn => generate number between 1 and 0
+            # *self.outputs.shape => with * unpacking operation so ex. (18,36) => 18,36 because dont use tuple in random.randn
+            self.outputs = self.outputs * self.mask
+        else:
+            self.mask = None 
+
+
         return self.outputs
 
     def backward(self, dA,L1_lambda=0.0, L2_lambda=0.0):
+
+        if self.dropout_rate >= 0.0 and self.mask is not None:
+            dA = dA * self.mask
+
         activation_derivative = self.neurons[0].derivative(
             self.Z,
             alpha=self.neurons[0].alpha
@@ -145,14 +160,14 @@ class NeuralNetwork():
     def add(self, layer):
         self.layers.append(layer)
 
-    def forward (self, input):
+    def forward (self, input, training=True):
         output = input # The output from the previous layer will be our input
         for layer in self.layers:
-            output = layer.forward(output)
+            output = layer.forward(output, training=training)
         return output
 
     def predict(self, inputs):
-        return self.forward(input=inputs)
+        return self.forward(input=inputs, training=False)
 
     def backward(self, dA):
         for layer in reversed(self.layers):
@@ -165,7 +180,7 @@ class NeuralNetwork():
             self.optimizer.update(layer)
 
     def train_step(self, input, y_true):
-        y_pred = self.forward(input)
+        y_pred = self.forward(input, training=True) #use dropout for training step so training=True
         loss = loss_functions.mse_loss(y_true, y_pred)
         if self.L1_lambda > 0.0:
             loss += self.L1_lambda * sum(np.sum(np.abs(layer.W)) for layer in self.layers)
@@ -211,7 +226,7 @@ class NeuralNetwork():
         return history
 
     def evaluate (self, input, y_true, func=loss_functions.mse_loss): # func=> which loss function to use for evaluation, default is mean squared error
-        y_pred = self.forward(input)
+        y_pred = self.forward(input, training=False) #dont use dropout => not training step so False
         loss = func(y_true, y_pred)
         return loss
 

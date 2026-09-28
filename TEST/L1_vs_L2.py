@@ -39,7 +39,7 @@ model_normal.add(Layer(input_size=32, neuron_count=1, activation="linear", deriv
 history_normal = model_normal.fit(X_train, y_train, EPOCH, batch_size=len(X_train), validation_data=(X_validation, y_validation))
 
 #============================================
-# L1 REG. MODEL (RİDGE)
+# L1 REG. MODEL (LASSO)
 #============================================
 np.random.seed(42)
 model_L1 = NeuralNetwork(Adam(learning_rate=0.01), L1_lambda=0.0005)
@@ -50,7 +50,7 @@ model_L1.add(Layer(input_size=32, neuron_count=1, activation="linear", derivativ
 history_L1 = model_L1.fit(X_train, y_train, EPOCH, batch_size=len(X_train), validation_data=(X_validation, y_validation))
 
 #============================================
-# L2 REG. MODEL (LASSO)
+# L2 REG. MODEL (RİDGE)
 #============================================
 np.random.seed(42)
 model_L2 = NeuralNetwork(Adam(learning_rate=0.01), L2_lambda=0.0005)

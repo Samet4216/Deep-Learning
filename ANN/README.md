@@ -383,7 +383,7 @@ $$
 Then the parameter update is:
 
 $$
-	heta_t = \theta_{t-1} - \eta\frac{\hat m_t}{\sqrt{\hat v_t}+\epsilon}
+\theta_t = \theta_{t-1} - \eta\frac{\hat m_t}{\sqrt{\hat v_t}+\epsilon}
 $$
 
 Adam keeps its optimizer state separately from the layers.
@@ -536,6 +536,7 @@ ANN/
 ├── basic_neural_training.py
 ├── compare.py
 ├── loss_functions.py
+├── metrics.py
 ├── neuron_test.py
 ├── optimizers.py
 ├── test_of_activation_func.py

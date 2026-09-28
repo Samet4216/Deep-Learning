@@ -33,19 +33,30 @@ model_normal.add(Layer(input_size=1, neuron_count=64, activation="leaky_relu", d
 model_normal.add(Layer(input_size=64, neuron_count=32, activation="leaky_relu", derivative="leaky_relu_derivative"))
 model_normal.add(Layer(input_size=32, neuron_count=1, activation="linear", derivative="linear_derivative"))
 
-history_normal = model_normal.fit(X_train, y_train, EPOCH, batch_size=len(X_train), validation_data=(X_validation, y_validation))
+history_normal = model_normal.fit(
+    X_train,
+    y_train, 
+    EPOCH,
+    batch_size=len(X_train),
+    validation_data=(X_validation, y_validation)
+)
 
 # ==========================================
 # 3. DROPOUT MODEL (HİDDEN LAYER=> %20 DROPOUT)
 # ==========================================
 np.random.seed(42)
 model_dropout = NeuralNetwork(Adam(learning_rate=0.01))
-model_dropout.add(Layer(input_size=1, neuron_count=64, activation="leaky_relu", derivative="leaky_relu_derivative", dropout_rate=0.1))
-model_dropout.add(Layer(input_size=64, neuron_count=32, activation="leaky_relu", derivative="leaky_relu_derivative", dropout_rate=0.1))
+model_dropout.add(Layer(input_size=1, neuron_count=64, activation="leaky_relu", derivative="leaky_relu_derivative", dropout_rate=0.2))
+model_dropout.add(Layer(input_size=64, neuron_count=32, activation="leaky_relu", derivative="leaky_relu_derivative", dropout_rate=0.2))
 model_dropout.add(Layer(input_size=32, neuron_count=1, activation="linear", derivative="linear_derivative", dropout_rate=0.0))
 
-history_dropout = model_normal.fit(X_train, y_train, EPOCH, batch_size=len(X_train), validation_data=(X_validation, y_validation))
-
+history_dropout = model_dropout.fit(
+    X_train,
+    y_train, 
+    EPOCH,
+    batch_size=len(X_train),
+    validation_data=(X_validation, y_validation)
+)
 
 # ==========================================
 # 4. RESULT
@@ -66,7 +77,6 @@ report("NORMAL (No Dropout)", history_normal)
 report("DROPOUT (p=0.2)", history_dropout)
 
 #model with dropout learns much more slowly
-# =======================================================
 # RESULT: NORMAL (No Dropout)
 # =======================================================
 # Best Validation Loss : 0.487191)
@@ -77,7 +87,7 @@ report("DROPOUT (p=0.2)", history_dropout)
 # =======================================================
 # RESULT: DROPOUT (p=0.2)
 # =======================================================
-# Best Validation Loss : 0.369691)
-# Last Train Loss            : 0.021514
-# Last Val Loss              : 0.449837
+# Best Validation Loss : 0.380001)
+# Last Train Loss            : 0.194372
+# Last Val Loss              : 0.736208
 # =======================================================

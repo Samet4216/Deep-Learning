@@ -30,7 +30,7 @@ loss_data = network.fit(
     epochs=20,
     batch_size=3
 )
-adam_loss = loss_data
+adam_loss = loss_data["loss"]
 #===SGD optimizer===
 np.random.seed(42)  # fixes NumPy's random number generator. randomly generated values are the same on every run.
 optimizer = optimizers.SGD(learning_rate = learning_rate)
@@ -45,7 +45,7 @@ loss_data = network.fit(
     epochs=20,
     batch_size=3
 )
-sgd_loss = loss_data
+sgd_loss = loss_data["loss"]
 print("Learning Rate:", learning_rate)
 print("Adam Loss:", adam_loss[-1])
 print("SGD Loss:", sgd_loss[-1])

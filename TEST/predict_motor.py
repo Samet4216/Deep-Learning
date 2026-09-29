@@ -44,8 +44,8 @@ for layer, (w_key, b_key) in zip(model.layers, [('W1', 'b1'), ('W2', 'b2'), ('W3
 # -------------------------------------------------------------------------
 # BUG FIX: Why we must update each neuron directly
 # -------------------------------------------------------------------------
-# 1. Problem: `Layer.forward()` always rebuilds its weight matrix from neurons.
-#    Setting `layer.weights = W` did nothing, so the model used random weights!
+# 1. Problem: 'Layer.forward()' always rebuilds its weight matrix from neurons.
+#    Setting 'layer.weights = W' did nothing, so the model used random weights!
 #
 # 2. Solution: We copy trained weights directly into each neuron (`W[:, i]`).
 # -------------------------------------------------------------------------

@@ -41,12 +41,8 @@ print("1. EXPERIMENT: LINEAR MODEL (No hidden layers)")
 print("="*50)
 
 linear_model = NeuralNetwork(Adam(learning_rate=0.01))
-linear_model.add(
-    Layer(1, 1, activation="linear", derivative="linear_derivative")
-)
-linear_model.fit(
-    X_train, y_train, epochs=60, batch_size=16, validation_data=(X_test, y_test)
-)
+linear_model.add(Layer(1, 1, activation="linear", derivative="linear_derivative"))
+linear_model.fit(X_train, y_train, epochs=60, batch_size=16, validation_data=(X_test, y_test))
 linear_test_loss = linear_model.evaluate(X_test, y_test)
 print(f"-->Linear model mse loss on test set: {linear_test_loss:.4f}")
 
@@ -59,15 +55,9 @@ print("2. EXPERIMENT: NONLINEAR ANN (16 Neuron Hidden Layer)")
 print("="*50)
 
 nonlinear_model = NeuralNetwork(Adam(learning_rate=0.01))
-nonlinear_model.add(
-    Layer(1, 16, activation="leaky_relu", derivative="leaky_relu_derivative")
-)
-nonlinear_model.add(
-    Layer(16, 1, activation="linear", derivative="linear_derivative")
-)
-nonlinear_model.fit(
-    X_train, y_train, epochs=60, batch_size=16, validation_data=(X_test, y_test)
-)
+nonlinear_model.add(Layer(1, 16, activation="leaky_relu", derivative="leaky_relu_derivative"))
+nonlinear_model.add(Layer(16, 1, activation="linear", derivative="linear_derivative"))
+nonlinear_model.fit(X_train, y_train, epochs=60, batch_size=16, validation_data=(X_test, y_test))
 nonlinear_test_loss = nonlinear_model.evaluate(X_test, y_test)
 print(f"-->Nonlinear model mse loss on test set: {nonlinear_test_loss:.4f}")
 

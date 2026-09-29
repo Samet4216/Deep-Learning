@@ -30,4 +30,4 @@ Thumbs.db
 images_readme
 COMMIT_NOTES.md
 DATA/PMSM.csv
-*.csv
+!DATA/PMSM_sample.csv

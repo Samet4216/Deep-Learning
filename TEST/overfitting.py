@@ -108,21 +108,9 @@ X_train, y_train, X_validation, y_validation, X_test, y_test = split_dataset(
 # BIG MODEL SETUP 
 
 model = NeuralNetwork(Adam(learning_rate=0.01), L2_lambda=0.001)
-model.add(
-    Layer(
-        input_size=1, neuron_count=64, activation="leaky_relu", derivative="leaky_relu_derivative"
-    )
-)
-model.add(
-    Layer(
-        input_size=64, neuron_count=32, activation="leaky_relu", derivative="leaky_relu_derivative"
-    )
-)
-model.add(
-    Layer(
-        input_size=32, neuron_count=1, activation="linear", derivative="linear_derivative"
-    )
-)
+model.add(Layer(input_size=1, neuron_count=64, activation="leaky_relu", derivative="leaky_relu_derivative"))
+model.add(Layer(input_size=64, neuron_count=32, activation="leaky_relu", derivative="leaky_relu_derivative"))
+model.add(Layer(input_size=32, neuron_count=1, activation="linear", derivative="linear_derivative"))
 
 # 3. MODEL TRAİNİNG(300 EPOCH)
 
@@ -142,7 +130,7 @@ sweet_spot_epoch = L2_val_loss.index(min_L2_val_loss) + 1
 print("\n" + "="*55)
 print("RAPOR OF OVERFİTTİNG")
 print("="*55)
-print(f"Best Validation Loss (Sweet Spot) : {min_L2_val_loss:.6f}  (Epoch {sweet_spot_epoch})")
+print(f"Best Validation Loss  : {min_L2_val_loss:.6f}  (Epoch {sweet_spot_epoch})")
 print(f"Last Epoch Train Loss     : {L2_train_loss[-1]:.6f}")
 print(f"Last Epoch Val Loss       : {L2_val_loss[-1]:.6f}")
 difference = ((L2_val_loss[-1] - min_L2_val_loss) / min_L2_val_loss) * 100

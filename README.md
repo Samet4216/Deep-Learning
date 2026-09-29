@@ -158,3 +158,11 @@ python TEST\early_stopping.py
 # Chapter 2 Capstone: PMSM Motor Speed Predictor
 python TEST\motor_predictor.py
 ```
+
+## Dataset Setup
+
+Bu proje Kaggle'daki PMSM Motor veri setini kullanmaktadir. Dosya boyutu (300MB) Github sinirlarini astigi icin repo icinde yer almamaktadir.
+
+1. Veri setini buradan indirin: [Kaggle PMSM Dataset](https://www.kaggle.com/datasets/wkirgsn/electric-motor-temperature)
+2. Indirdiginiz dosyayi `DATA` klasorunun icine `PMSM.csv` adiyla kaydedin.
+3. Proje icindeki `DATA/PMSM_sample.csv` dosyasi veri setinin nasil gorundugune dair kucuk bir ornektir.

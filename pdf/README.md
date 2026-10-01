@@ -2,6 +2,12 @@
 
 This folder contains the visual notes and PDF document for Chapter 1 — Artificial Neural Networks.
 
+## Download
+[Download Chapter 1 PDF](chapter-1.pdf)
+=======================================
+[Download Chapter 2 PDF](chapter-2.pdf)
+
+
 ## Chapter 1 Notes
 
 The images below document the development process, explanations, experiments, and results covered in the chapter.
@@ -40,7 +46,3 @@ The images below document the development process, explanations, experiments, an
 ![Chapter 1 page 32](WhatsApp%20Image%202026-09-19%20at%2018.02.57.jpeg)
 ![Chapter 1 page 33](WhatsApp%20Image%202026-09-19%20at%2018.03.09.jpeg)
 
-## Download
-
-[Download Chapter 1 PDF](chapter-1.pdf)
-[Download Chapter 2 PDF](chapter-2.pdf)

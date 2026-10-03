@@ -27,13 +27,10 @@ def linear(z, alpha=None):
 def linear_derivative(z, alpha=None):
     return np.ones_like(z)
 
-def softmax(z):
+def softmax(z, alpha=None):
     z_stable = z - np.max(z, axis=1, keepdims=True) #[2000, 2001, 2002] - 2002 = [-2, -1, 0] # subtracting the max value for numerical stability
     exp_z = np.exp(z_stable)
     return exp_z / np.sum(exp_z, axis=1, keepdims=True) #keepdims=True to maintain the same shape for broadcasting
 
-def catogorical_cross_entropy(y_true, y_pred):
-    y_pred = np.clip(y_pred, 1e-15, 1-1e-15)  #clip predictions to avoid log(0)
-    sample_losses = -np.sum(y_true * np.log(y_pred), axis=1) #compute the loss for each sample
-    batch_loss = np.mean(sample_losses)
-    return batch_loss
+def softmax_derivative(z, alpha=None):
+    return 1

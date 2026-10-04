@@ -4,9 +4,6 @@ This folder contains the visual notes and PDF document for Chapter 1 — Artific
 
 ## Download
 [Download Chapter 1 PDF](chapter-1.pdf)
-=======================================
-[Download Chapter 2 PDF](chapter-2.pdf)
-
 
 ## Chapter 1 Notes
 

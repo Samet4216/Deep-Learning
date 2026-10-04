@@ -55,9 +55,15 @@ def split_dataset(X, y, train_ratio, validation_ratio, seed=None):
         raise ValueError("Validation set would be empty.")
     if test_count == 0:
         raise ValueError("Test set would be empty.")
-
-
     return (X_train, y_train, X_validation, y_validation, X_test, y_test)
+
+def to_one_hot(labels, class_count):
+    N = len(labels)
+    one_hot = np.zeros((N, class_count))
+    one_hot[np.arange(N), labels] = 1 #for class=4 || [0, 1, 2, 3, 4], [0, 3, 1, 4] ||=> [[1, 0, 0, 0, 0], [0, 0, 0, 1, 0], [0, 1, 0, 0, 0], [0, 0, 0, 0, 1]]
+    return one_hot
+#in NumPy, if you pass two lists to a two-dimensional matrix in the form "matrix[array1, array2]"" numPy matches them based on their corresponding indices.
+#[2, 0]=0 [2, 1]=1 [2, 2]=0 [2, 3]=0 [2, 4]=0 ...
 
 if __name__ == "__main__":
     ##Test##

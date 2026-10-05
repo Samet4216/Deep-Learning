@@ -91,3 +91,9 @@ if __name__ == "__main__":
         len(X_train) + len(X_val) + len(X_test)
     )
     print(np.array_equal(X_train[:, 0] // 3, y_train[:, 0]))
+
+def apply_label_smoothing(one_hot_labels, alpha=0.1):
+    #one_hot_labels: (N, C) shape
+    class_count = one_hot_labels.shape[1]
+    smoothed_labels = one_hot_labels * (1 - alpha) + (alpha / class_count)
+    return smoothed_labels

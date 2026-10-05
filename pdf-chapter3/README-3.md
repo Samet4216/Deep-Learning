@@ -11,11 +11,11 @@ This chapter transforms our from-scratch NumPy neural network framework from a r
 ```text
 ANN/
 ├── activation_functions.py     # + Softmax activation (numerically stable)
-├── loss_functions.py           # + Categorical & Binary Cross-Entropy (loss + derivative)
+├── loss_functions.py           # + Categorical, Binary & Weighted Cross-Entropy
 ├── basic_neural_training.py    # Multi-purpose training pipeline (planned integration)
 ├── metrics.py                  # + Confusion Matrix, Precision, Recall, F1-Score (upcoming)
 DATA/
-├── dataset.py                  # + One-Hot Encoding utility (to_one_hot)
+├── dataset.py                  # + One-Hot Encoding & Label Smoothing utilities
 ```
 
 ---
@@ -29,8 +29,8 @@ DATA/
 | **3.3** | Backpropagation Proof: Softmax + CCE → $dZ = A - Y$ | **Completed** | `categorical_cross_entropy_derivative()` returns $(A - Y) / N$. Jacobian matrix cancellation proven analytically and verified numerically. |
 | **3.4** | Binary (BCE) vs. Multi-Class (CCE) Architecture Comparison | **Completed** | `binary_cross_entropy()` and `binary_cross_entropy_derivative()` added. Sigmoid is the 2-class special case of Softmax. |
 | **3.5** | One-Hot Encoding & Categorical Data Transformation | **Completed** | `to_one_hot()` in `dataset.py`. Vectorized NumPy indexing, no loops. |
-| **3.6** | Class Imbalance & Weighted Cross-Entropy | Upcoming | Penalizing minority-class misses in defense/UAV scenarios. |
-| **3.7** | Label Smoothing (Modern Regularization) | Upcoming | Preventing overconfident Softmax outputs. |
+| **3.6** | Class Imbalance & Weighted Cross-Entropy | **Completed** | `weighted_categorical_cross_entropy()` and derivative. Penalizes minority-class misses heavily. |
+| **3.7** | Label Smoothing (Modern Regularization) | **Completed** | `apply_label_smoothing()`. Prevents overconfident predictions by softly distributing target probabilities. |
 | **3.8** | Advanced Metrics: Confusion Matrix, Precision, Recall, F1-Score | Upcoming | Macro vs. Weighted averaging, harmonic mean rationale. |
 | **3.9** | Decision Boundary Visualization (2D Contour Plots) | Upcoming | Visualizing how the network separates classes in feature space. |
 | **3.10** | Synthetic UAV Sensor Data Generator | Upcoming | Physics-based flight simulator for Normal / Fault / Spoofing / Turbulence classes. |
@@ -50,25 +50,16 @@ $$
 \sigma(z)_i = \frac{e^{z_i}}{\sum_{j=1}^{C} e^{z_j}}
 $$
 
-- **Max-Shift Trick:** Before computing $e^{z_i}$, the maximum value is subtracted from all logits ($z_i - z_{\max}$) to prevent numerical overflow. This does not change the result because:
-
-$$
-\frac{e^{z_i - C}}{\sum e^{z_j - C}} = \frac{e^{z_i}}{\sum e^{z_j}}
-$$
-
-- **Why not `a * (1 - a)` like Sigmoid?** Unlike Sigmoid where each neuron is independent, Softmax outputs are interconnected (the denominator contains all neurons). Its derivative is a full $C \times C$ **Jacobian matrix**, not a simple element-wise vector. This is why we combine it with Cross-Entropy instead.
+- **Max-Shift Trick:** Before computing $e^{z_i}$, the maximum value is subtracted from all logits ($z_i - z_{\max}$) to prevent numerical overflow.
+- **Why not `a * (1 - a)` like Sigmoid?** Unlike Sigmoid where each neuron is independent, Softmax outputs are interconnected. Its derivative is a full $C \times C$ **Jacobian matrix**, not a simple element-wise vector. This is why we combine it with Cross-Entropy instead.
 
 ### Categorical Cross-Entropy Loss (`loss_functions.py`)
-
-Measures how "surprised" the model is when comparing its predicted probabilities against the true labels:
 
 $$
 L = -\frac{1}{N}\sum_{k=1}^{N} \sum_{i=1}^{C} y_{k,i} \log(\hat{y}_{k,i})
 $$
 
 - One-Hot encoded $y$ acts as a filter: zeros kill all wrong-class terms, leaving only $L = -\log(\hat{y}_{\text{correct}})$.
-- **Clipping:** `np.clip(y_pred, 1e-15, 1 - 1e-15)` prevents $\log(0) = -\infty$ singularity.
-- **Why not MSE for classification?** MSE combined with Softmax causes **Vanishing Gradients**: when the model is confidently wrong (output near 0 or 1), Sigmoid/Softmax derivatives approach zero, multiplying the large MSE error signal down to near-zero. Cross-Entropy bypasses this because the $\frac{1}{a}$ term from $\log$'s derivative cancels the $a$ term from Softmax's derivative.
 
 ### Backpropagation: The $dZ = A - Y$ Derivation
 
@@ -78,12 +69,23 @@ $$
 \frac{\partial L}{\partial z_i} = \sum_k \frac{\partial L}{\partial a_k} \cdot \frac{\partial a_k}{\partial z_i} = a_i - y_i
 $$
 
-**Three-stage cancellation:**
-1. One-Hot zeros eliminate all terms except the correct class.
-2. $\log$'s derivative ($\frac{1}{a}$) cancels Softmax's output ($a$) in numerator/denominator.
-3. The remaining expression collapses to $a_i - y_i$ (Prediction minus Truth).
+### Weighted Cross-Entropy (Class Imbalance Handling)
 
-This is why `softmax_derivative()` returns `1` — the derivative is already folded into the loss derivative, and multiplying by 1 preserves the combined gradient.
+In defense scenarios (e.g., UAVs), an attack class might represent $0.1\%$ of the data. Standard CCE causes the network to ignore these rare events. By introducing a class weight multiplier $w_c$, we severely penalize misclassifications on minority classes:
+
+$$
+L_{\text{weighted}} = - \sum_{i=1}^{C} w_i \cdot y_i \log(\hat{y}_i)
+$$
+The gradient scales proportionally: $dZ = w \odot (A - Y)$.
+
+### Label Smoothing (Regularization)
+
+Models trained with hard targets `[1.0, 0.0, 0.0]` tend to push weights to infinity, resulting in overconfidence and overfitting. Label Smoothing introduces a doubt factor $\alpha$ (e.g., $0.1$):
+
+$$
+y_{\text{smooth}} = y_{\text{true}} \times (1 - \alpha) + \frac{\alpha}{C}
+$$
+This transforms `[1.0, 0.0, 0.0]` into softer targets like `[0.933, 0.033, 0.033]`, preventing overconfidence on noisy sensor data.
 
 ### Binary Cross-Entropy (`loss_functions.py`)
 
@@ -93,24 +95,11 @@ $$
 L = -\big[y \cdot \log(P) + (1-y) \cdot \log(1-P)\big]
 $$
 
-Its combined derivative also simplifies to $dZ = (P - y) / N$, identical in structure to the multi-class case. Sigmoid is mathematically a 2-class special case of Softmax.
+Its combined derivative also simplifies to $dZ = (P - y) / N$. Sigmoid is mathematically a 2-class special case of Softmax.
 
 ### One-Hot Encoding (`dataset.py`)
 
-Converts integer class labels into binary vectors:
-
-```text
-labels = [0, 2, 1, 0, 3]    (5 samples, 4 classes)
-
-Output:
-[[1, 0, 0, 0],    ← Class 0
- [0, 0, 1, 0],    ← Class 2
- [0, 1, 0, 0],    ← Class 1
- [1, 0, 0, 0],    ← Class 0
- [0, 0, 0, 1]]    ← Class 3
-```
-
-- **Why?** Raw integers imply false ordering ($3 > 2 > 1$). One-Hot vectors are equidistant, preventing the network from learning nonexistent hierarchies.
+Converts integer class labels into binary vectors.
 - **Implementation:** Vectorized NumPy advanced indexing (`one_hot[np.arange(N), labels] = 1`) — no Python loops.
 
 ---
@@ -127,4 +116,4 @@ Output:
 
 ---
 
-*Chapter 3 is actively in progress. Next steps: Class Imbalance handling, Label Smoothing, advanced metrics, and the UAV anomaly detection capstone project.*
+*Chapter 3 is actively in progress. Next steps: Advanced metrics, Decision Boundaries, and the UAV anomaly detection capstone project.*

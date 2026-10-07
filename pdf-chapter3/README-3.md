@@ -13,9 +13,11 @@ ANN/
 ├── activation_functions.py     # + Softmax activation (numerically stable)
 ├── loss_functions.py           # + Categorical, Binary & Weighted Cross-Entropy
 ├── basic_neural_training.py    # Multi-purpose training pipeline (planned integration)
-├── metrics.py                  # + Confusion Matrix, Precision, Recall, F1-Score (upcoming)
+├── metrics.py                  # + Confusion Matrix, Precision, Recall, F1-Score
 DATA/
 ├── dataset.py                  # + One-Hot Encoding & Label Smoothing utilities
+TEST/
+├── visualization.py            # + Decision Boundary visualization tool
 ```
 
 ---
@@ -31,8 +33,8 @@ DATA/
 | **3.5** | One-Hot Encoding & Categorical Data Transformation | **Completed** | `to_one_hot()` in `dataset.py`. Vectorized NumPy indexing, no loops. |
 | **3.6** | Class Imbalance & Weighted Cross-Entropy | **Completed** | `weighted_categorical_cross_entropy()` and derivative. Penalizes minority-class misses heavily. |
 | **3.7** | Label Smoothing (Modern Regularization) | **Completed** | `apply_label_smoothing()`. Prevents overconfident predictions by softly distributing target probabilities. |
-| **3.8** | Advanced Metrics: Confusion Matrix, Precision, Recall, F1-Score | Upcoming | Macro vs. Weighted averaging, harmonic mean rationale. |
-| **3.9** | Decision Boundary Visualization (2D Contour Plots) | Upcoming | Visualizing how the network separates classes in feature space. |
+| **3.8** | Advanced Metrics: Confusion Matrix, Precision, Recall, F1-Score | **Completed** | `classification_report` and pure numpy `confusion_matrix` implemented. |
+| **3.9** | Decision Boundary Visualization (2D Contour Plots) | **Completed** | `plot_decision_boundary()` with `meshgrid` for spatial mapping and scanning. |
 | **3.10** | Synthetic UAV Sensor Data Generator | Upcoming | Physics-based flight simulator for Normal / Fault / Spoofing / Turbulence classes. |
 | **3.11** | Multi-Purpose Model Integration (`basic_neural_training.py`) | Upcoming | Unified `loss_function` parameter for MSE / CCE / BCE selection. |
 | **3.12** | **Final Project:** Real-Time UAV Anomaly & GPS Spoofing Detection | Upcoming | Live inference pipeline with alarm system. |
@@ -87,20 +89,9 @@ y_{\text{smooth}} = y_{\text{true}} \times (1 - \alpha) + \frac{\alpha}{C}
 $$
 This transforms `[1.0, 0.0, 0.0]` into softer targets like `[0.933, 0.033, 0.033]`, preventing overconfidence on noisy sensor data.
 
-### Binary Cross-Entropy (`loss_functions.py`)
+### Decision Boundary Visualization
 
-For 2-class problems using a single Sigmoid output neuron:
-
-$$
-L = -\big[y \cdot \log(P) + (1-y) \cdot \log(1-P)\big]
-$$
-
-Its combined derivative also simplifies to $dZ = (P - y) / N$. Sigmoid is mathematically a 2-class special case of Softmax.
-
-### One-Hot Encoding (`dataset.py`)
-
-Converts integer class labels into binary vectors.
-- **Implementation:** Vectorized NumPy advanced indexing (`one_hot[np.arange(N), labels] = 1`) — no Python loops.
+We use `np.meshgrid` to generate thousands of grid points across the 2D feature space. These points are flattened, passed through the model's `predict()` function, and refolded into an image matrix to map exactly how the network spatially separates distinct classes (regions).
 
 ---
 
@@ -116,4 +107,4 @@ Converts integer class labels into binary vectors.
 
 ---
 
-*Chapter 3 is actively in progress. Next steps: Advanced metrics, Decision Boundaries, and the UAV anomaly detection capstone project.*
+*Chapter 3 is actively in progress. Next steps: Synthetic UAV Sensor Data Generator, Model Integration, and the final capstone project.*

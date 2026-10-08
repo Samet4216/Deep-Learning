@@ -2,7 +2,7 @@
 
 This chapter transforms our from-scratch NumPy neural network framework from a regression-only engine into a **multi-purpose classification system** capable of detecting anomalies in UAV sensor data.
 
-> **Goal:** Extend the existing architecture with Softmax, Cross-Entropy, advanced evaluation metrics, and deploy it on a real-time UAV anomaly detection pipeline.
+> **Goal:** Extend the existing architecture with Softmax, Cross-Entropy, advanced evaluation metrics, and deploy it on a real-time anomaly detection pipeline.
 
 ---
 
@@ -12,12 +12,13 @@ This chapter transforms our from-scratch NumPy neural network framework from a r
 ANN/
 ├── activation_functions.py     # + Softmax activation (numerically stable)
 ├── loss_functions.py           # + Categorical, Binary & Weighted Cross-Entropy
-├── basic_neural_training.py    # Multi-purpose training pipeline (planned integration)
+├── basic_neural_training.py    # + Dynamic compile() and Dependency Injection
 ├── metrics.py                  # + Confusion Matrix, Precision, Recall, F1-Score
 DATA/
 ├── dataset.py                  # + One-Hot Encoding & Label Smoothing utilities
 TEST/
 ├── visualization.py            # + Decision Boundary visualization tool
+└── test_classification.py      # + Full multi-class integration testing
 ```
 
 ---
@@ -35,9 +36,9 @@ TEST/
 | **3.7** | Label Smoothing (Modern Regularization) | **Completed** | `apply_label_smoothing()`. Prevents overconfident predictions by softly distributing target probabilities. |
 | **3.8** | Advanced Metrics: Confusion Matrix, Precision, Recall, F1-Score | **Completed** | `classification_report` and pure numpy `confusion_matrix` implemented. |
 | **3.9** | Decision Boundary Visualization (2D Contour Plots) | **Completed** | `plot_decision_boundary()` with `meshgrid` for spatial mapping and scanning. |
-| **3.10** | Synthetic UAV Sensor Data Generator | Upcoming | Physics-based flight simulator for Normal / Fault / Spoofing / Turbulence classes. |
-| **3.11** | Multi-Purpose Model Integration (`basic_neural_training.py`) | Upcoming | Unified `loss_function` parameter for MSE / CCE / BCE selection. |
-| **3.12** | **Final Project:** Real-Time UAV Anomaly & GPS Spoofing Detection | Upcoming | Live inference pipeline with alarm system. |
+| **3.10** | Synthetic UAV Sensor Data Generator | **Scrapped** | *Pivoted to using real Kaggle Industrial/IoT datasets to maintain strict engineering authenticity over toy datasets.* |
+| **3.11** | Multi-Purpose Model Integration (`basic_neural_training.py`) | **Completed** | Dynamic `compile()` method implemented via Dependency Injection. Replaced hardcoded MSE in `train_step`, `fit`, and `evaluate`. Tested on 3-class data. |
+| **3.12** | **Final Project:** Real-Time IoT/UAV Anomaly Detection (Kaggle) | Upcoming | Live inference pipeline with alarm system using real data. |
 | **3.13** | Documentation: GitHub & LinkedIn Report | Upcoming | Comprehensive technical write-up. |
 
 ---
@@ -80,14 +81,9 @@ L_{\text{weighted}} = - \sum_{i=1}^{C} w_i \cdot y_i \log(\hat{y}_i)
 $$
 The gradient scales proportionally: $dZ = w \odot (A - Y)$.
 
-### Label Smoothing (Regularization)
+### Dependency Injection (Architecture)
 
-Models trained with hard targets `[1.0, 0.0, 0.0]` tend to push weights to infinity, resulting in overconfidence and overfitting. Label Smoothing introduces a doubt factor $\alpha$ (e.g., $0.1$):
-
-$$
-y_{\text{smooth}} = y_{\text{true}} \times (1 - \alpha) + \frac{\alpha}{C}
-$$
-This transforms `[1.0, 0.0, 0.0]` into softer targets like `[0.933, 0.033, 0.033]`, preventing overconfidence on noisy sensor data.
+Instead of hardcoding loss functions (`if-else` blocks) inside the core neural network engine, the engine is completely decoupled. Functions are dynamically injected at runtime via `model.compile(loss_func=..., loss_deriv=...)`, strictly adhering to the Open/Closed Principle (SOLID).
 
 ### Decision Boundary Visualization
 
@@ -107,4 +103,4 @@ We use `np.meshgrid` to generate thousands of grid points across the 2D feature 
 
 ---
 
-*Chapter 3 is actively in progress. Next steps: Synthetic UAV Sensor Data Generator, Model Integration, and the final capstone project.*
+*Chapter 3 is actively in progress. Next steps: Kaggle IoT Dataset Procurement and Final Capstone Project.*

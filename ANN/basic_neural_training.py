@@ -157,6 +157,10 @@ class NeuralNetwork():
         self.L1_lambda = L1_lambda
         self.L2_lambda = L2_lambda
 
+    def compile(self, loss_function, loss_derivative):
+        self.loss_function = loss_function
+        self.loss_derivative = loss_derivative
+
     def add(self, layer):
         self.layers.append(layer)
 
@@ -181,12 +185,11 @@ class NeuralNetwork():
 
     def train_step(self, input, y_true):
         y_pred = self.forward(input, training=True) #use dropout for training step so training=True
-        loss = loss_functions.mse_loss(y_true, y_pred)
-        if self.L1_lambda > 0.0:
-            loss += self.L1_lambda * sum(np.sum(np.abs(layer.W)) for layer in self.layers)
-        if self.L2_lambda > 0.0:
-            loss += self.L2_lambda * sum(np.sum(layer.W**2) for layer in self.layers) / 2
-        dA = 2 * (y_pred - y_true) / y_true.size # derivative of mean squared error
+        loss = self.loss_function(y_true, y_pred) #calculate loss for the current batch
+        
+        if self.L1_lambda > 0.0: loss += self.L1_lambda * sum(np.sum(np.abs(layer.W)) for layer in self.layers)
+        if self.L2_lambda > 0.0: loss += self.L2_lambda * sum(np.sum(layer.W**2) for layer in self.layers) / 2
+        dA = self.loss_derivative(y_true, y_pred) #dinamic loss function derivative for backpropagation.
         # y_true.size => gives exactly the total number of elements. For example, if y_true.shape == (3,4): gives 12.
 
         self.backward(dA) # definition for later use 
@@ -222,7 +225,7 @@ class NeuralNetwork():
                 validation_loss = self.evaluate(
                     validation_input,
                     validation_target,
-                    func=loss_functions.mse_loss 
+                    func=self.loss_function
                 )
                 val_loss_data.append(validation_loss)
                 print(f"Validation Loss = {validation_loss:.6f}")
@@ -249,7 +252,9 @@ class NeuralNetwork():
         }
         return history
 
-    def evaluate (self, input, y_true, func=loss_functions.mse_loss): # func=> which loss function to use for evaluation, default is mean squared error
+    def evaluate (self, input, y_true, func=None): # func=> which loss function to use for evaluation, default is mean squared error
+        if func is None:
+            func = self.loss_function
         y_pred = self.forward(input, training=False) #dont use dropout => not training step so False
         loss = func(y_true, y_pred)
         return loss

@@ -1,50 +1,103 @@
+""""============== FOR TESTING ======================== 
 
+(0.0,57.04,6.33,64.0,4.290556192,4.290556192,0.0,0,0,0,0,0,0,0,0.0,0.0,0.0,0.0,0.0,1,0,0,0,0,0,0,1,0,0,0,0,1,1,
+581.33,54.0,66.3,54.79640359,2.822973165,57.04,82926067.47,9.5,10.46466611,4.010353307,160.9878424,0.05,141.55)    =DoS
+
+
+(2.90355103,302978.2,5.5,80.8,86.36816036,86.36816036,0.0,0,0,0,1,1,0,0,0.0,2.6,0.0,113.1,198.1,0,1,0,0,0,0,0,1,0,0,0,0,
+1,1,9065.8,54.0,2390.0,1354.908254,1137.288218,1810.4,0.002277589,5.5,48.26519406,1608.368422,1617462.614,0.8,38.5)    =R2L
+
+
+(0.956842637,1333.9,6.0,197.7,4.336956025,4.336956025,0.0,0,0,1,0,1,0,0,0.6,1.3,0.7,0.6,3.7,0,0,0,0,0,0,0,1,0,0,
+0,0,1,1,304.2,54.0,57.6,54.77666667,1.445659432,57.6,0.001068521,5.5,10.46607269,2.044471175,7.087888889,0.3,38.5)   =Probe
+
+
+(37.88702755,1687747.1,9.3,63.5,34.04822059,34.04822059,0.0,0,0,0,0,1,0,0,0.0,0.0,0.0,58.6,1610.8,0,1,0,0,0,0,0,1,0,0,
+0,0,1,1,2733.2,77.0,817.5,356.4069444,332.1224511,817.5,0.005235219,5.5,24.33335522,469.6920748,209236.1925,0.9,38.5)  =Normal
+
+
+(0.199231648,755901.0,6.0,64.0,3244.965758,3244.965758,0.0,0,0,0,0,1,0,0,0.0,0.0,0.0,119.0,646.5,0,1,
+0,0,0,0,0,1,0,0,0,0,1,1,363.0,66.0,66.0,66.0,0.0,66.0,5.51e-06,5.5,11.48912529,0.0,0.0,0.0,38.5)    =R2L
+
+
+(0.142555223,2322.79,6.66,79.77,493.2836359,493.2836359,0.0,0,0,0,0,1,0,0,0.0,0.02,0.0,1.0,30.41,0,1,0,0,0,0,0,1,0,0,0,
+0,1,1,973.23,62.4,166.71,93.90730504,35.34702893,94.41,83707173.31,9.5,13.42281661,48.12290307,3201.472632,0.38,141.55)   =U2R
+
+
+(0.0,54.0,6.0,64.0,0.329807153,0.329807153,0.0,1,0,1,0,0,0,0,1.0,0.0,1.0,0.0,0.0,0,0,0,0,0,0,0,1,0,0,0,0,1,1
+,567.0,54.0,54.0,54.0,0.0,54.0,83343831.92,9.5,10.39230485,0.0,0.0,0.0,141.55)    =DoS
+
+
+(0.0,0.0,47.0,64.0,1.954122905,1.954122905,0.0,0,0,0,0,0,0,0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0
+,0,0,0,0,1,1,6216.0,592.0,592.0,592.0,0.0,592.0,83698395.13,9.5,34.40930107,0.0,0.0,0.0,141.55)    =U2R
+
+
+(0.0,58.0,6.0,47.7,90.90878353,90.90878353,0.0,0,1,0,0,0,0,0,0.0,1.0,0.0,0.0,0.0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,879.0,
+54.0,58.0,56.66245719,1.867369298,58.0,166429800.8,13.5,10.64489676,2.645008108,3.504600023,1.0,244.6)   =Probe
+
+
+(48.27238431,128041.4,10.4,97.8,39966.18404,39966.18404,0.0,0,0,0,0,1,0,0,0.0,0.4,0.0,312.5,677.1,0,1,0,0,0,0,0,1,0,0,0,0,1,1,10171.8,55.6,
+1566.4,661.318481,694.9070699,636.4,166520014.0,13.5,36.39328932,983.9683346,484212.3242,1.0,244.6)     =Normal
+
+"""
 import sys
 from pathlib import Path
-
+import numpy as np
+import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "ANN"))
-
-import numpy as np
-import ANN.loss_functions as lf
 from ANN.basic_neural_training import NeuralNetwork, Layer
-from DATA.dataset import  preprocess_iot, to_one_hot, split_dataset
-from ANN.metrics import classification_report
 from ANN.optimizers import Adam
-
+import re
 if __name__ == "__main__":
-    file_path = "../DATA/iot_data.csv"
-    X, y, class_weights, scaler = preprocess_iot(file_path, sample_size=100000)
-    y_one_hot = to_one_hot(y, class_count=5)
-
-    X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(
-        X,
-        y_one_hot, 
-        train_ratio=0.7, 
-        validation_ratio=0.15,
-        seed=42
-        )
-
-    input_features = X_train.shape[1] # 46 for this dataset
+    saved_data = np.load("../DATA/iot_model_weights.npz", allow_pickle=True)
     model = NeuralNetwork(Adam(learning_rate=0.001))
-    model.add(Layer(input_size=input_features, neuron_count=128, activation="leaky_relu", derivative="leaky_relu_derivative"))
-    model.add(Layer(input_size=128, neuron_count=64, activation="leaky_relu", derivative="leaky_relu_derivative"))
+    model.add(Layer(input_size=46, neuron_count=128, activation="leaky_relu", derivative="leaky_relu_derivative", dropout_rate=0.2))
+    model.add(Layer(input_size=128, neuron_count=64, activation="leaky_relu", derivative="leaky_relu_derivative", dropout_rate=0.1))
     model.add(Layer(input_size=64, neuron_count=32, activation="leaky_relu", derivative="leaky_relu_derivative"))
     model.add(Layer(input_size=32, neuron_count=5, activation="softmax", derivative="softmax_derivative"))
 
-    model.compile(loss_function=lf.categorical_cross_entropy, loss_derivative=lf.categorical_cross_entropy_derivative)
-
-    print("Training the model...")
-    history = model.fit(
-        X_train,
-        y_train,
-        epochs=250,
-        batch_size=256,
-        validation_data=(X_val, y_val),
-        patience=25,
-    )
-    print("learning_rate:", model.optimizer.learning_rate, "sample_size:", len(X_train), "batch_size:", 256, "epochs:", 100, "patience:", 25)
-    y_pred = model.predict(X_test)
+    model.set_weights(saved_data["weights"])
     class_names = ["Normal", "DoS", "Probe", "R2L", "U2R"]
-    classification_report(y_test, y_pred, class_names)
+
+    buffer = ""
+    print("\n copy-paste the 46 features (for exit 'q'):")
+    
+    while True:
+        user_input = input("> " if not buffer else "")
+        if user_input.lower().strip() == 'q': break
+        
+        buffer += " " + user_input
+        number_str = re.findall(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", buffer)
+        
+        if len(number_str) < 46:  continue
+            
+        if len(number_str) > 46:
+            print(f"[ERROR] Found {len(number_str)} numbers. Expected exactly 46.")
+            buffer = ""
+            continue
+            
+        try:
+            float_values = [float(x) for x in number_str]
+            X_single = np.array(float_values).reshape(1, 46)
+            
+            X_single_scaled = (X_single - saved_data["scaler_mean"]) / (saved_data["scaler_std"] + 1e-8)
+            probabilities = model.predict(X_single_scaled)[0] 
+            
+            print("\n" + "="*45 + "\nRESULTS:\n" + "="*45)
+            for i in range(5):
+                print(f"{class_names[i]:<10}: % {probabilities[i] * 100:>6.2f}")
+            print("="*45)
+            
+            best_class_index = np.argmax(probabilities)
+            print(f"Best class: [{class_names[best_class_index]}]\n")
+            
+        except Exception as e:
+            print(f"[ERROR] {e}")
+            
+        buffer = ""
+        print("\n copy-paste the 46 features (for exit 'q'):")
+
+    
+

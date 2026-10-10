@@ -39,7 +39,6 @@ TEST/
 | **3.10** | Synthetic UAV Sensor Data Generator | **Scrapped** | *Pivoted to using real Kaggle Industrial/IoT datasets to maintain strict engineering authenticity over toy datasets.* |
 | **3.11** | Multi-Purpose Model Integration (`basic_neural_training.py`) | **Completed** | Dynamic `compile()` method implemented via Dependency Injection. Replaced hardcoded MSE in `train_step`, `fit`, and `evaluate`. Tested on 3-class data. |
 | **3.12** | **Final Project:** Real-Time IoT/UAV Anomaly Detection (Kaggle) | **Completed** | Processed 140k packets (46 features). Combatted severe imbalance (90% DoS) using weights. Applied Dropout, L2, and Label Smoothing to prevent overfitting (early stopping at epoch 56). Achieved 0.85 Macro F1 and 0.99 U2R detection. Built interactive CLI for live inference with zero-division (`1e-8`) and regex protection. |
-| **3.13** | Documentation: GitHub & LinkedIn Report | Upcoming | Comprehensive technical write-up. |
 
 ---
 
@@ -100,6 +99,18 @@ We use `np.meshgrid` to generate thousands of grid points across the 2D feature 
 | Loss Function | MSE | Binary Cross-Entropy | Categorical Cross-Entropy |
 | Gradient ($dZ$) | $\frac{2(A-Y)}{N}$ | $\frac{P-y}{N}$ | $\frac{A-Y}{N}$ |
 | Target Format | Raw value | 0 or 1 | One-Hot vector |
+
+---
+
+## 5. Chapter 3 Capstone: Real-Time IoT AI Firewall
+
+The pinnacle of Chapter 3 is the successful deployment of a from-scratch neural network acting as a **Real-Time AI Firewall** for IoT/UAV networks. Using zero external ML libraries (no PyTorch/TensorFlow), the engine achieved professional-grade anomaly detection on a 140,000-packet Kaggle dataset.
+
+### Engineering Challenges Overcome:
+1. **Severe Class Imbalance:** The dataset was highly skewed (90% DoS attacks, 0.1% U2R attacks). Solved by injecting **Dynamic Class Weights** into the Categorical Cross-Entropy function, boosting the U2R detection rate to **99.5%**.
+2. **Overfitting on Imbalanced Data:** The model initially memorized the majority class and struggled with subtle `R2L` (Remote-to-Local) intrusions. Solved by activating a robust regularization pipeline: **Dropout (20%)**, **L2 Weight Decay**, and **Label Smoothing**. This pushed the Macro F1-Score from 0.64 to **0.85** and boosted R2L detection by 300%.
+3. **Mathematical Instability (NaN errors):** Resolved division-by-zero crashes during live normalization (caused by static network features like IRC ports having `std=0`) by adding an epsilon (`1e-8`) to the custom `StandardScaler`.
+4. **Live Inference Deployment:** Decoupled the architecture from the training loop, exporting the trained weights and scaler memory as a `.npz` brain. Built an **Interactive CLI** with a regex-powered parsing engine (`re.findall`) to seamlessly analyze raw, multi-line, scientific-notation (`e-06`) network packet data pasted directly into the terminal.
 
 ---
 

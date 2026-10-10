@@ -30,4 +30,5 @@ Thumbs.db
 images_readme
 COMMIT_NOTES.md
 DATA/PMSM.csv
+DATA/iot_data.csv
 !DATA/PMSM_sample.csv

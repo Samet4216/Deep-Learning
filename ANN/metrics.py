@@ -69,10 +69,9 @@ def confusion_matrix(y_true, y_pred, class_count):
     """
 
 def classification_report(y_true, y_pred, class_name=None):
-    y_true = np.argmax(y_true, axist=1) #argmax returns the indices of the maximum values along an axis
+    class_count = y_true.shape[1]
+    y_true = np.argmax(y_true, axis=1) #argmax returns the indices of the maximum values along an axis
     y_pred = np.argmax(y_pred, axis=1) # ex: 1 or 2 or 3 indices
-
-    class_count = y_true.shape[0]
     if class_name is None: class_name = [f"Class {i}" for i in range(class_count)]
     #class1 class2 class3 class4 class5 ...
     """

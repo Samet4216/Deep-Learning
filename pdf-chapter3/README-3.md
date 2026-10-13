@@ -144,8 +144,11 @@ model.compile(
 
 1. **Extreme Class Imbalance:** DoS attacks accounted for $>90\%$ of packets, while U2R accounted for $<0.1\%$. The weighted loss successfully forced the network to prioritize rare intrusion vectors.
 2. **Combating Epoch 52 Overfitting:** The baseline MLP memorized DoS patterns and failed on subtle R2L intrusions. Implementing **Inverted Dropout (0.2 on Layer 1, 0.1 on Layer 2)** combined with **$L_2$ weight decay** broke co-adaptations, boosting R2L recall from $16\%$ to $65.7\%$.
-3. **The Silent NaN Bug (Zero-Variance Features):** Static network features (e.g., legacy IRC flags) produced $\sigma = 0$. Normalizing incoming test packets caused zero-division infinities that corrupted the forward pass. Resolved by injecting an epsilon safeguard: `(X - mean) / (std + 1e-8)`.
-4. **Resilient Terminal Streaming:** Designed a buffer accumulator with scientific notation regex (`[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?`) enabling operators to copy-paste multiline arrays (including values like `5.51e-06`) directly into the CLI.
+3. **The Silent NaN Bug (Zero-Variance Features):** Static network features (e.g., legacy IRC flags) produced zero standard deviation ($\sigma = 0$). Normalizing incoming test packets caused zero-division infinities that corrupted the forward pass. Resolved by injecting an epsilon safeguard ($\epsilon = 10^{-8}$) into the feature scaler:
+
+   $$\hat{X} = \frac{X - \mu}{\sigma + 10^{-8}}$$
+
+4. **Resilient Terminal Streaming:** Designed an accumulator buffer with scientific-notation parsing to cleanly process multiline terminal inputs without stream fragmentation, seamlessly handling exponential float values (such as `5.51e-06`).
 
 ---
 
@@ -153,7 +156,7 @@ model.compile(
 
 ### 5.1 Progression: Baseline vs. Regularized AI Firewall
 
-| Metric | Baseline MLP (10k samples, No Dropout) | Optimized Firewall (140k samples, Dropout ) | Improvement |
+| Metric | Baseline MLP (10k samples, No Dropout) | Optimized Firewall (140k samples, Dropout + L2) | Improvement |
 | :--- | :---: | :---: | :---: |
 | **Normal F1** | 0.5797 | **0.8673** | **+49.6%** |
 | **DoS F1** | 0.9981 | **0.9995** | High Precision Maintained |
